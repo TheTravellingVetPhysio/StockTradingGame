@@ -1,5 +1,7 @@
 package entities;
 
+import shared.configuration.AppConfig;
+
 public class Portfolio
 {
   private final int id;
@@ -8,7 +10,7 @@ public class Portfolio
 
   public Portfolio()
   {
-    currentBalance = 0;
+    currentBalance = AppConfig.getInstance().getStartingBalance();
     id = idCounter++;
   }
 

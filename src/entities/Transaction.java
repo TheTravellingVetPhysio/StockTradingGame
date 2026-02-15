@@ -1,5 +1,7 @@
 package entities;
 
+import shared.configuration.AppConfig;
+
 import java.time.LocalDateTime;
 
 public class Transaction

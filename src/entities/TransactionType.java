@@ -2,5 +2,5 @@ package entities;
 
 public enum TransactionType
 {
-  BUY, SELL, DEPOSIT
+  BUY, SELL, DEPOSIT, WITHDRAWAL, RETURN
 }

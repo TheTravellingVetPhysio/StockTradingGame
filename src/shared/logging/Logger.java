@@ -2,7 +2,7 @@ package shared.logging;
 
 public class Logger
 {
-  private static final Logger instance = new Logger();
+  private static final Logger instance = new Logger();  // Eager initialization
   private LogOutput output;
 
   private Logger() {}

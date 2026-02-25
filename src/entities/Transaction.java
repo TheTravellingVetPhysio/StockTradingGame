@@ -1,13 +1,12 @@
 package entities;
 
-import shared.configuration.AppConfig;
-
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Transaction
 {
-  private final int id;
-  private final int portfolioId;
+  private final String id;
+  private final String portfolioId;
   private final String stockSymbol;
   private final TransactionType type;
   private final int quantity;
@@ -16,13 +15,11 @@ public class Transaction
   private final double fee;
   private final LocalDateTime timestamp;
 
-  private static int idCounter = 0;
-
-  public Transaction(int portfolioId, String stockSymbol, TransactionType type,
-      int quantity, double pricePerShare, double totalAmount, double fee,
-      LocalDateTime timestamp)
+  private Transaction(String id, String portfolioId, String stockSymbol,
+      TransactionType type, int quantity, double pricePerShare,
+      double totalAmount, double fee, LocalDateTime timestamp)
   {
-    id = idCounter++;
+    this.id = id;
     this.portfolioId = portfolioId;
     this.stockSymbol = stockSymbol;
     this.type = type;
@@ -33,12 +30,26 @@ public class Transaction
     this.timestamp = timestamp;
   }
 
-  public int getId()
+  public static Transaction createNew(String portfolioId, String stockSymbol,
+      TransactionType type, int quantity, double pricePerShare,
+      double totalAmount, double fee, LocalDateTime timestamp)
+  {
+    return new Transaction(UUID.randomUUID().toString(), portfolioId, stockSymbol, type, quantity, pricePerShare, totalAmount, fee, timestamp);
+  }
+
+  public static Transaction reloadFromStorage(String id, String portfolioId, String stockSymbol,
+      TransactionType type, int quantity, double pricePerShare,
+      double totalAmount, double fee, LocalDateTime timestamp)
+  {
+    return new Transaction(id, portfolioId, stockSymbol, type, quantity, pricePerShare, totalAmount, fee, timestamp);
+  }
+
+  public String getId()
   {
     return id;
   }
 
-  public int getPortfolioId()
+  public String getPortfolioId()
   {
     return portfolioId;
   }

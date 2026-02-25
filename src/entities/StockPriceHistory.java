@@ -1,26 +1,35 @@
 package entities;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class StockPriceHistory
 {
-  private final int id;
+  private final String id;
   private final String stockSymbol;
   private final double price;
   private final LocalDateTime timestamp;
 
-  private static int idCounter = 0;
-
-  public StockPriceHistory(String stockSymbol, double price,
+  private StockPriceHistory(String id, String stockSymbol, double price,
       LocalDateTime timestamp)
   {
-    id = idCounter++;
+    this.id = id;
     this.stockSymbol = stockSymbol;
     this.price = price;
     this.timestamp = timestamp;
   }
 
-  public int getId()
+  public static StockPriceHistory createNew(String stockSymbol, double price,
+      LocalDateTime timestamp) {
+    return new StockPriceHistory(UUID.randomUUID().toString(), stockSymbol, price, timestamp);
+  }
+
+  public static StockPriceHistory reloadFromStorage(String id, String stockSymbol, double price,
+      LocalDateTime timestamp) {
+    return new StockPriceHistory(id, stockSymbol, price, timestamp);
+  }
+
+  public String getId()
   {
     return id;
   }

@@ -1,29 +1,43 @@
 package entities;
 
+import java.util.UUID;
+
 public class OwnedStock
 {
-  private final int id;
-  private final int portfolioId;
+  private final String id;
+  private final String portfolioId;
   private final String stockSymbol;
   private int numberOfShares;
 
-  private static int idCounter = 0;
-
-  public OwnedStock(int portfolioId, String stockSymbol,
+  private OwnedStock(String id, String portfolioId, String stockSymbol,
       int numberOfShares)
   {
+    this.id = id;
     this.portfolioId = portfolioId;
-    this.id = idCounter++;
     this.stockSymbol = stockSymbol;
     this.numberOfShares = numberOfShares;
   }
 
-  public int getId()
+  // skal dubletter - samme portfolioId og samme aktie - lægges sammen under samme id? Eller repræsenterer denne de forskellige "batches" de er købt i? Og hvis det repræsenterer batches, giver det så mening med en setNumberOfShares?
+  public static OwnedStock createNew(String portfolioId, String stockSymbol,
+      int numberOfShares)
+  {
+    return new OwnedStock(UUID.randomUUID().toString(), portfolioId,
+        stockSymbol, numberOfShares);
+  }
+
+  public static OwnedStock reloadFromStorage(String id, String portfolioId,
+      String stockSymbol, int numberOfShares)
+  {
+    return new OwnedStock(id, portfolioId, stockSymbol, numberOfShares);
+  }
+
+  public String getId()
   {
     return id;
   }
 
-  public int getPortfolioId()
+  public String getPortfolioId()
   {
     return portfolioId;
   }

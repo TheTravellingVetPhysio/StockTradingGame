@@ -1,5 +1,7 @@
 package shared.configuration;
 
+import java.util.Random;
+
 public class AppConfig
 {
   private static final AppConfig instance = new AppConfig();
@@ -7,12 +9,15 @@ public class AppConfig
   private final int startingBalance;
   private final double transactionFee;
   private final int updateFrequencyInMs;
+  private final double defaultStockPrice;
+  Random random = new Random();
 
   private AppConfig()
   {
     this.transactionFee = 50;
     this.updateFrequencyInMs = 1000;
     this.startingBalance = 10000;
+    this.defaultStockPrice = 50 + random.nextDouble() * 150;
   }
 
   public static AppConfig getInstance()
@@ -20,8 +25,8 @@ public class AppConfig
     return instance;
   }
 
-  public double getDefaultStockPrice() {
-    double defaultStockPrice = 3;
+  public double getDefaultStockPrice()
+  {
     return defaultStockPrice;
   }
 

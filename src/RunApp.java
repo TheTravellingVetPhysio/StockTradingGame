@@ -5,7 +5,7 @@ import shared.logging.Logger;
 
 public class RunApp
 {
-  public static void main(String[] args)
+  public static void main(String[] args) throws InterruptedException
   {
     Logger logger = Logger.getInstance();
     logger.setOutput(new ConsoleLogOutput());
@@ -18,5 +18,7 @@ public class RunApp
     StockMarket.getInstance().addNewStock("VESTA");
 
     new MarketTickerThread().start();
- }
+
+    Thread.currentThread().join(); // kør for evigt
+  }
 }

@@ -4,7 +4,6 @@ import entities.OwnedStock;
 import persistance.interfaces.OwnedStockDAO;
 import shared.logging.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FileOwnedStockDAO implements OwnedStockDAO
@@ -61,32 +60,30 @@ public class FileOwnedStockDAO implements OwnedStockDAO
     throw new RuntimeException("OwnedStock not found: " + id);
   }
 
-  @Override public List<OwnedStock> getOwnedStocksByPortfolioId(String portfolioId)
-  {
-    List<OwnedStock> ownedStocks = uow.getOwnedStockList();
-    List<OwnedStock> result = new ArrayList<>();
-    for (OwnedStock ownedStock : ownedStocks)
-    {
-      if (ownedStock.getPortfolioId().equals(portfolioId))
-      {
-        result.add(OwnedStock.reloadFromStorage(ownedStock.getId(),
-            ownedStock.getPortfolioId(), ownedStock.getStockSymbol(),
-            ownedStock.getNumberOfShares()));
-      }
-    }
-    return result;
+  @Override
+  public List<OwnedStock> getOwnedStocksByPortfolioId(String portfolioId) {
+    return uow.getOwnedStockList()
+        .stream()
+        .filter(stock -> stock.getPortfolioId().equals(portfolioId))
+        .map(stock -> OwnedStock.reloadFromStorage(
+            stock.getId(),
+            stock.getPortfolioId(),
+            stock.getStockSymbol(),
+            stock.getNumberOfShares()
+        ))
+        .toList();
   }
 
-  @Override public List<OwnedStock> getAllOwnedStocks()
-  {
-    List<OwnedStock> ownedStocks = uow.getOwnedStockList();
-    List<OwnedStock> ownedStocksCopy = new ArrayList<>();
-    for (OwnedStock ownedStock : ownedStocks)
-    {
-      ownedStocksCopy.add(OwnedStock.reloadFromStorage(ownedStock.getId(),
-          ownedStock.getPortfolioId(), ownedStock.getStockSymbol(),
-          ownedStock.getNumberOfShares()));
-    }
-    return ownedStocksCopy;
+  @Override
+  public List<OwnedStock> getAllOwnedStocks() {
+    return uow.getOwnedStockList()
+        .stream()
+        .map(stock -> OwnedStock.reloadFromStorage(
+            stock.getId(),
+            stock.getPortfolioId(),
+            stock.getStockSymbol(),
+            stock.getNumberOfShares()
+        ))
+        .toList();
   }
 }

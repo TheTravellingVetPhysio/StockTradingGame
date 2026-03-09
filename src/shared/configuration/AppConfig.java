@@ -11,7 +11,7 @@ public class AppConfig
   private AppConfig()
   {
     this.transactionFee = 50;
-    this.updateFrequencyInMs = 100;
+    this.updateFrequencyInMs = 1000;
     this.startingBalance = 10000;
   }
 

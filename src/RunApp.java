@@ -1,3 +1,5 @@
+import business.stockmarket.MarketTickerThread;
+import business.stockmarket.StockMarket;
 import shared.logging.ConsoleLogOutput;
 import shared.logging.Logger;
 
@@ -9,7 +11,12 @@ public class RunApp
     logger.setOutput(new ConsoleLogOutput());
 
     logger.log("INFO", "Application started");
-    logger.log("WARNING", "Stock not found in database");
-    logger.log("ERROR", "Failed to save data...");
-  }
+
+    StockMarket.getInstance().addNewStock("AAPL");
+    StockMarket.getInstance().addNewStock("GOOGL");
+    StockMarket.getInstance().addNewStock("MSFT");
+    StockMarket.getInstance().addNewStock("VESTA");
+
+    new MarketTickerThread().start();
+ }
 }

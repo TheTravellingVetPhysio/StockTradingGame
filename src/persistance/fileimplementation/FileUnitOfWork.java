@@ -182,7 +182,7 @@ public class FileUnitOfWork implements UnitOfWork
   {
     String[] parts = splitPSV(line);
     return new Stock(parts[0], parts[1], Double.parseDouble(parts[2]),
-        StockState.valueOf(parts[3]));
+        String.valueOf(parts[3]));
   }
 
   private String toPSV(Stock stock)

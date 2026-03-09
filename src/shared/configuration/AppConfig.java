@@ -20,6 +20,11 @@ public class AppConfig
     return instance;
   }
 
+  public double getDefaultStockPrice() {
+    double defaultStockPrice = 3;
+    return defaultStockPrice;
+  }
+
   public int getStartingBalance()
   {
     return startingBalance;

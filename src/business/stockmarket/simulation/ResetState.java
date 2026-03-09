@@ -7,6 +7,7 @@ public class ResetState implements StockState
   @Override public double calculatePriceChange(LiveStock stock)
   {
     stock.setState(new SteadyState());
+    logTransition(stock);
     return AppConfig.getInstance().getDefaultStockPrice();
   }
 

@@ -27,10 +27,12 @@ public class GrowingState implements StockState
       if (rand < 0.6)
       {
         stock.setState(new SteadyState());
+        logTransition(stock);
       }
       else if (rand < 0.85)
       {
         stock.setState(new DecliningState());
+        logTransition(stock);
       }
     }
     else if (consecutiveDeclines >= 2)
@@ -38,10 +40,12 @@ public class GrowingState implements StockState
       if (rand < 0.35)
       {
         stock.setState(new SteadyState());
+        logTransition(stock);
       }
       else if (rand < 0.5)
       {
         stock.setState(new DecliningState());
+        logTransition(stock);
       }
     }
     else if (consecutiveDeclines >= 1)
@@ -49,10 +53,12 @@ public class GrowingState implements StockState
       if (rand < 0.07)
       {
         stock.setState(new SteadyState());
+        logTransition(stock);
       }
       else if (rand < 0.1)
       {
         stock.setState(new DecliningState());
+        logTransition(stock);
       }
     }
 

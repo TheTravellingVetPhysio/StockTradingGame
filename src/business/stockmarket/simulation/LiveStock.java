@@ -1,10 +1,11 @@
 package business.stockmarket.simulation;
 
 import shared.configuration.AppConfig;
+import shared.logging.Logger;
 
 public class LiveStock
 {
-  private String symbol;
+  private final String symbol;
   private StockState currentState;
   private double currentPrice;
 
@@ -17,7 +18,7 @@ public class LiveStock
 
   public static LiveStock createNew(String symbol)
   {
-    return new LiveStock(symbol, StockState.ACTIVE,
+    return new LiveStock(symbol, new SteadyState(),
         AppConfig.getInstance().getDefaultStockPrice());
   }
 
@@ -36,6 +37,8 @@ public class LiveStock
     {
       currentPrice = 0;
       setState(new BankruptState());
+      Logger.getInstance().log("WARN", symbol + " has gone bankrupt!");
+
     }
   }
 
@@ -48,11 +51,17 @@ public class LiveStock
   {
     return switch (stateName)
     {
-      case "Stable" -> new StableState();
-      case "Bankrupt" -> new BankruptState();
-      // osv...
+      case "SteadyState" -> new SteadyState();
+      case "GrowingState" -> new GrowingState();
+      case "DecliningState" -> new DecliningState();
+      case "BankruptState" -> new BankruptState();
+      case "ResetState" -> new ResetState();
       default ->
-          throw new IllegalArgumentException("Unknown state: " + stateName);
+      {
+        Logger.getInstance()
+            .log("ERROR", "Unknown state: " + stateName);
+        throw new IllegalArgumentException("Unknown state: " + stateName);
+      }
     };
   }
 
@@ -68,6 +77,6 @@ public class LiveStock
 
   public String getCurrentStateName()
   {
-    return currentState.getCurrentState();
+    return currentState.getName();
   }
 }

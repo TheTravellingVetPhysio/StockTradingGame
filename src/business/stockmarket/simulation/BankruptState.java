@@ -20,8 +20,8 @@ public class BankruptState implements StockState
     if (ticks >= bankruptDuration)
     {
       stock.setState(new SteadyState());
+      logTransition(stock);
     }
-
     return 0;
   }
 

@@ -14,11 +14,12 @@ public class SteadyState implements StockState
 
     if (rand < 0.08) {
       stock.setState(new GrowingState());
+      logTransition(stock);
     }
     else if (rand < 0.14) {
       stock.setState(new DecliningState());
+      logTransition(stock);
     }
-
     return change;
   }
 

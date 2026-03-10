@@ -4,14 +4,15 @@ import shared.configuration.AppConfig;
 
 public class ResetState implements StockState
 {
-  @Override public double calculatePriceChange(LiveStock stock)
+  @Override
+  public double calculatePriceChange(LiveStock stock)
   {
-    stock.setState(new SteadyState());
-    logTransition(stock);
+    TransitionManager.getInstance().transition(stock, 0);
     return AppConfig.getInstance().getDefaultStockPrice();
   }
 
-  @Override public String getName()
+  @Override
+  public String getName()
   {
     return "ResetState";
   }

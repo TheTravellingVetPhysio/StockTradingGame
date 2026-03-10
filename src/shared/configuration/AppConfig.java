@@ -10,14 +10,13 @@ public class AppConfig
   private final double transactionFee;
   private final int updateFrequencyInMs;
   private final double defaultStockPrice;
-  Random random = new Random();
 
   private AppConfig()
   {
     this.transactionFee = 50;
     this.updateFrequencyInMs = 1000;
     this.startingBalance = 10000;
-    this.defaultStockPrice = 50 + random.nextDouble() * 150;
+    this.defaultStockPrice = 50;
   }
 
   public static AppConfig getInstance()

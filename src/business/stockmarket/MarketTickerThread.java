@@ -8,7 +8,7 @@ public class MarketTickerThread
   private final StockMarket stockMarket = StockMarket.getInstance();
   private final int updateFrequency = AppConfig.getInstance()
       .getUpdateFrequencyInMs();
-  Thread thread;
+  private Thread thread;
 
   public void start()
   {

@@ -3,6 +3,8 @@ package business.stockmarket.simulation;
 import shared.configuration.AppConfig;
 import shared.logging.Logger;
 
+import java.util.Random;
+
 public class LiveStock
 {
   private final String symbol;
@@ -18,8 +20,10 @@ public class LiveStock
 
   public static LiveStock createNew(String symbol)
   {
+    Random random = new Random();
     return new LiveStock(symbol, new SteadyState(),
-        AppConfig.getInstance().getDefaultStockPrice());
+        AppConfig.getInstance().getDefaultStockPrice()
+            + random.nextDouble() * 100);
   }
 
   public static LiveStock reloadFromStorage(String symbol, String stateName,
@@ -58,8 +62,7 @@ public class LiveStock
       case "ResetState" -> new ResetState();
       default ->
       {
-        Logger.getInstance()
-            .log("ERROR", "Unknown state: " + stateName);
+        Logger.getInstance().log("ERROR", "Unknown state: " + stateName);
         throw new IllegalArgumentException("Unknown state: " + stateName);
       }
     };

@@ -25,11 +25,11 @@ public class TransitionManager {
     String currentState = stock.getCurrentStateName();
 
     switch (currentState) {
-      case "SteadyState" -> handleSteady(stock);
-      case "GrowingState" -> handleGrowing(stock, changePercent);
-      case "DecliningState" -> handleDeclining(stock, changePercent);
-      case "BankruptState" -> handleBankrupt(stock);
-      case "ResetState" -> handleReset(stock);
+      case SteadyState.NAME -> handleSteady(stock);
+      case GrowingState.NAME -> handleGrowing(stock, changePercent);
+      case DecliningState.NAME -> handleDeclining(stock, changePercent);
+      case BankruptState.NAME -> handleBankrupt(stock);
+      case ResetState.NAME -> handleReset(stock);
     }
   }
 

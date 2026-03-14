@@ -2,6 +2,8 @@ package business.stockmarket.simulation;
 
 public class BankruptState implements StockState
 {
+  public static final String NAME = "BankruptState";
+
   @Override
   public double calculatePriceChange(LiveStock stock)
   {
@@ -12,6 +14,6 @@ public class BankruptState implements StockState
   @Override
   public String getName()
   {
-    return "BankruptState";
+    return NAME;
   }
 }

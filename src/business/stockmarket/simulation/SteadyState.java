@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class SteadyState implements StockState
 {
+  public static final String NAME = "SteadyState";
   private static final Random random = new Random();
 
   @Override
@@ -20,6 +21,6 @@ public class SteadyState implements StockState
   @Override
   public String getName()
   {
-    return "SteadyState";
+    return NAME;
   }
 }

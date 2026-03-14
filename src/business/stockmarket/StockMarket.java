@@ -1,5 +1,9 @@
 package business.stockmarket;
 
+import business.events.StockBankruptEvent;
+import business.events.StockUpdateEvent;
+import business.observertooling.EventType;
+import business.observertooling.Subject;
 import business.stockmarket.simulation.LiveStock;
 import entities.Stock;
 import shared.logging.Logger;
@@ -8,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class StockMarket
+public class StockMarket extends Subject
 {
   private static final StockMarket instance = new StockMarket(); // Eager initialization
   private final List<LiveStock> liveStockList = new ArrayList<>();
@@ -34,6 +38,12 @@ public class StockMarket
   public void updateAllStocks() {
     for (LiveStock liveStock : liveStockList) {
       liveStock.updatePrice();
+      notifyListeners(EventType.STOCK_UPDATED, liveStock);
+
+      if (liveStock.getCurrentStateName().equals("BankruptState")) {
+        notifyListeners(EventType.STOCK_BANKRUPT, liveStock);
+      }
+
       Logger.getInstance().log("INFO", liveStock.getSymbol() +
           " | Price: " + liveStock.getCurrentPrice() +
           " | State: " + liveStock.getCurrentStateName());

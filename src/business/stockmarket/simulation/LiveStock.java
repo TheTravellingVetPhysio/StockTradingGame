@@ -55,11 +55,11 @@ public class LiveStock
   {
     return switch (stateName)
     {
-      case "SteadyState" -> new SteadyState();
-      case "GrowingState" -> new GrowingState();
-      case "DecliningState" -> new DecliningState();
-      case "BankruptState" -> new BankruptState();
-      case "ResetState" -> new ResetState();
+      case SteadyState.NAME -> new SteadyState();
+      case GrowingState.NAME -> new GrowingState();
+      case DecliningState.NAME -> new DecliningState();
+      case BankruptState.NAME -> new BankruptState();
+      case ResetState.NAME -> new ResetState();
       default ->
       {
         Logger.getInstance().log("ERROR", "Unknown state: " + stateName);

@@ -4,6 +4,8 @@ import shared.configuration.AppConfig;
 
 public class ResetState implements StockState
 {
+  public static final String NAME = "ResetState";
+
   @Override
   public double calculatePriceChange(LiveStock stock)
   {
@@ -14,6 +16,6 @@ public class ResetState implements StockState
   @Override
   public String getName()
   {
-    return "ResetState";
+    return NAME;
   }
 }

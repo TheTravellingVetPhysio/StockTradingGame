@@ -37,6 +37,8 @@ public class FileUnitOfWork implements UnitOfWork
 
   private void ensureFileExists()
   {
+    new File(directoryPath).mkdirs();
+
     createFileIfNotExists(directoryPath + "/portfoliolist.txt");
     createFileIfNotExists(directoryPath + "/ownedstocklist.txt");
     createFileIfNotExists(directoryPath + "/stocklist.txt");

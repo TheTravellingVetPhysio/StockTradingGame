@@ -8,32 +8,36 @@ import java.util.Random;
 public class LiveStock
 {
   private final String symbol;
+  private final String name;
   private StockState currentState;
   private double currentPrice;
 
-  private LiveStock(String symbol, StockState currentState, double currentPrice)
+  private LiveStock(String symbol, String name, StockState currentState, double currentPrice)
   {
     this.symbol = symbol;
+    this.name = name;
     this.currentState = currentState;
     this.currentPrice = currentPrice;
   }
 
-  public static LiveStock createNew(String symbol)
+  public static LiveStock createNew(String symbol, String name)
   {
     Random random = new Random();
-    return new LiveStock(symbol, new SteadyState(),
+    return new LiveStock(symbol, name, new SteadyState(),
         AppConfig.getInstance().getDefaultStockPrice()
             + random.nextDouble() * 100);
   }
 
-  public static LiveStock reloadFromStorage(String symbol, String stateName,
+  public static LiveStock reloadFromStorage(String symbol, String name, String stateName,
       double currentPrice)
   {
-    return new LiveStock(symbol, mapState(stateName), currentPrice);
+    return new LiveStock(symbol, name, mapState(stateName), currentPrice);
   }
 
-  public void updatePrice()
+  public boolean updatePrice()
   {
+    String stateBefore = getCurrentStateName();
+
     double priceChange = currentState.calculatePriceChange(this);
     currentPrice += priceChange;
 
@@ -42,8 +46,9 @@ public class LiveStock
       currentPrice = 0;
       setState(new BankruptState());
       Logger.getInstance().log("WARN", symbol + " has gone bankrupt!");
-
     }
+
+    return !stateBefore.equals(BankruptState.NAME) && getCurrentStateName().equals(BankruptState.NAME);
   }
 
   protected void setState(StockState newState)
@@ -71,6 +76,11 @@ public class LiveStock
   public String getSymbol()
   {
     return symbol;
+  }
+
+  public String getName()
+  {
+    return name;
   }
 
   public double getCurrentPrice()

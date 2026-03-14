@@ -1,0 +1,4 @@
+AAPL¤Apple¤73.88349250909185¤DecliningState
+GOOGL¤Google¤99.29900768112616¤GrowingState
+MSFT¤Microsoft¤57.129074910615174¤DecliningState
+VESTA¤Vestas¤72.79943589392042¤GrowingState

@@ -1,5 +1,6 @@
 package business.events;
 
-import entities.Stock;
-
-public record StockUpdateEvent(Object arg) {}
+public record StockUpdateEvent(String symbol, String name, double price,
+                               String state)
+{
+}

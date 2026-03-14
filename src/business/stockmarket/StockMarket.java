@@ -1,6 +1,5 @@
 package business.stockmarket;
 
-import business.events.StockBankruptEvent;
 import business.events.StockUpdateEvent;
 import business.observertooling.EventType;
 import business.observertooling.Subject;
@@ -23,13 +22,14 @@ public class StockMarket extends Subject
     return instance;
   }
 
-  public void addNewStock(String symbol) {
-    liveStockList.add(LiveStock.createNew(symbol));
+  public void addNewStock(String symbol, String name) {
+    liveStockList.add(LiveStock.createNew(symbol, name));
   }
 
   public void addExistingStock(Stock stock) {
     liveStockList.add(LiveStock.reloadFromStorage(
         stock.getSymbol(),
+        stock.getName(),
         stock.getCurrentState(),
         stock.getCurrentPrice()
     ));
@@ -37,10 +37,15 @@ public class StockMarket extends Subject
 
   public void updateAllStocks() {
     for (LiveStock liveStock : liveStockList) {
-      liveStock.updatePrice();
-      notifyListeners(EventType.STOCK_UPDATED, liveStock);
+      boolean justWentBankrupt = liveStock.updatePrice();
 
-      if (liveStock.getCurrentStateName().equals("BankruptState")) {
+      notifyListeners(EventType.STOCK_UPDATED, new StockUpdateEvent(
+          liveStock.getSymbol(),
+          liveStock.getName(),
+          liveStock.getCurrentPrice(),
+          liveStock.getCurrentStateName()
+      ));
+      if (justWentBankrupt) {
         notifyListeners(EventType.STOCK_BANKRUPT, liveStock);
       }
 

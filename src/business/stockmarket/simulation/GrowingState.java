@@ -10,7 +10,7 @@ public class GrowingState implements StockState
   @Override
   public double calculatePriceChange(LiveStock stock)
   {
-    double changePercent = (random.nextDouble() * 3 - 1) / 100;
+    double changePercent = (random.nextDouble() * 3 - 0.5) / 100;
     double change = stock.getCurrentPrice() * changePercent;
 
     TransitionManager.getInstance().transition(stock, changePercent);

@@ -1,4 +1,5 @@
 import business.observertooling.EventType;
+import business.services.StockAlertService;
 import business.services.StockBankruptService;
 import business.services.StockListenerService;
 import business.stockmarket.MarketTickerThread;
@@ -36,10 +37,16 @@ public class RunApp
     // Services
     StockListenerService stockListenerService = new StockListenerService(stockDAO, stockPriceHistoryDAO, uow);
     StockBankruptService stockBankruptService = new StockBankruptService(ownedStockDAO, uow);
+    StockAlertService stockAlertService = new StockAlertService();
+    StockMarket.getInstance().addListener(EventType.STOCK_BANKRUPT, stockAlertService);
 
-    // Registrer listeners på StockMarket
+    // Listeners
     StockMarket.getInstance().addListener(EventType.STOCK_UPDATED, stockListenerService);
     StockMarket.getInstance().addListener(EventType.STOCK_BANKRUPT, stockBankruptService);
+    stockListenerService.addListener(EventType.STOCK_UPDATED, stockAlertService);
+    stockListenerService.addListener(EventType.STOCK_UPDATED, arg -> System.out.println("Received update: " + arg));
+    stockAlertService.addListener(EventType.STOCK_ALERT, arg -> System.out.println("Received stock alert: " + arg));
+
 
     // Opret eller load aktier
     List<Stock> existingStocks = stockDAO.getAllStocks();

@@ -1,7 +1,9 @@
 package business.services;
 
 import business.events.StockUpdateEvent;
+import business.observertooling.EventType;
 import business.observertooling.Listener;
+import business.observertooling.Subject;
 import entities.Stock;
 import entities.StockPriceHistory;
 import persistance.interfaces.StockDAO;
@@ -11,7 +13,7 @@ import shared.logging.Logger;
 
 import java.time.LocalDateTime;
 
-public class StockListenerService implements Listener
+public class StockListenerService extends Subject implements Listener
 {
     private final StockDAO stockDAO;
     private final StockPriceHistoryDAO stockPriceHistoryDAO;
@@ -60,6 +62,8 @@ public class StockListenerService implements Listener
       stockPriceHistoryDAO.appendStockPriceHistory(history);
 
       unitOfWork.commit();
+
+      notifyListeners(EventType.STOCK_UPDATED, event);
 
       Logger.getInstance().log("INFO", "Stock updated: " + event.symbol()
           + " | Price: " + event.price()

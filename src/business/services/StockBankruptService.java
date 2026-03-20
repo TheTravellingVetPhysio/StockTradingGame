@@ -5,6 +5,7 @@ import business.observertooling.Listener;
 import entities.OwnedStock;
 import persistance.interfaces.OwnedStockDAO;
 import persistance.interfaces.UnitOfWork;
+import shared.exceptions.ServiceLayerException;
 import shared.logging.Logger;
 
 import java.util.List;
@@ -35,10 +36,7 @@ public class StockBankruptService implements Listener
     {
       unitOfWork.beginTransaction();
 
-      List<OwnedStock> ownedStocks = ownedStockDAO.getAllOwnedStocks()
-          .stream()
-          .filter(o -> o.getStockSymbol().equals(event.symbol()))
-          .toList();
+      List<OwnedStock> ownedStocks = ownedStockDAO.getOwnedStocksBySymbol(event.symbol());
 
       if (ownedStocks.isEmpty())
       {
@@ -50,7 +48,7 @@ public class StockBankruptService implements Listener
 
       for (OwnedStock ownedStock : ownedStocks)
       {
-        ownedStock.setNumberOfShares(-ownedStock.getNumberOfShares());
+        ownedStock.setNumberOfShares(0);
         ownedStockDAO.updateOwnedStock(ownedStock);
       }
 
@@ -59,10 +57,17 @@ public class StockBankruptService implements Listener
       Logger.getInstance().log("WARN", "Bankruptcy processed for: "
           + event.symbol() + " | Affected portfolios: " + ownedStocks.size());
     }
-    catch (Exception e)
+    catch (ServiceLayerException e)
     {
       unitOfWork.rollback();
       Logger.getInstance().log("ERROR", "Failed to process bankruptcy: " + e.getMessage());
+      throw e;
+    }
+    catch (Exception e)
+    {
+      unitOfWork.rollback();
+      Logger.getInstance().log("ERROR", "Unexpected error: " + e.getMessage());
+      throw new ServiceLayerException("Failed to process bankruptcy", e);
     }
   }
 }

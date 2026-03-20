@@ -75,6 +75,14 @@ public class FileOwnedStockDAO implements OwnedStockDAO
   }
 
   @Override
+  public List<OwnedStock> getOwnedStocksBySymbol(String symbol) {
+    return getAllOwnedStocks()
+        .stream()
+        .filter(o -> o.getStockSymbol().equals(symbol))
+        .toList();
+  }
+
+  @Override
   public List<OwnedStock> getAllOwnedStocks() {
     return uow.getOwnedStockList()
         .stream()

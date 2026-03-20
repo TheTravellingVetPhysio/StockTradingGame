@@ -18,7 +18,6 @@ public class OwnedStock
     this.numberOfShares = numberOfShares;
   }
 
-  // skal dubletter - samme portfolioId og samme aktie - lægges sammen under samme id? Eller repræsenterer denne de forskellige "batches" de er købt i? Og hvis det repræsenterer batches, giver det så mening med en setNumberOfShares?
   public static OwnedStock createNew(String portfolioId, String stockSymbol,
       int numberOfShares)
   {
@@ -52,8 +51,9 @@ public class OwnedStock
     return numberOfShares;
   }
 
-  public void setNumberOfShares(int sharesTransaction)
+  public void setNumberOfShares(int numberOfShares)
   {
-    this.numberOfShares = numberOfShares + sharesTransaction;
+    this.numberOfShares = numberOfShares;
   }
+
 }

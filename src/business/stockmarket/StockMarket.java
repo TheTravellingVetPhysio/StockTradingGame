@@ -1,5 +1,6 @@
 package business.stockmarket;
 
+import business.events.StockBankruptEvent;
 import business.events.StockUpdateEvent;
 import business.observertooling.EventType;
 import business.observertooling.Subject;
@@ -9,53 +10,62 @@ import shared.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class StockMarket extends Subject
 {
   private static final StockMarket instance = new StockMarket(); // Eager initialization
   private final List<LiveStock> liveStockList = new ArrayList<>();
 
-  private StockMarket() {}
+  private StockMarket()
+  {
+  }
 
-  public static StockMarket getInstance() {
+  public static StockMarket getInstance()
+  {
     return instance;
   }
 
-  public void addNewStock(String symbol, String name) {
+  public void addNewStock(String symbol, String name)
+  {
     liveStockList.add(LiveStock.createNew(symbol, name));
   }
 
-  public void addExistingStock(Stock stock) {
-    liveStockList.add(LiveStock.reloadFromStorage(
-        stock.getSymbol(),
-        stock.getName(),
-        stock.getCurrentState(),
-        stock.getCurrentPrice()
-    ));
+  public void addExistingStock(Stock stock)
+  {
+    liveStockList.add(
+        LiveStock.reloadFromStorage(stock.getSymbol(), stock.getName(),
+            stock.getCurrentState(), stock.getCurrentPrice()));
   }
 
-  public void updateAllStocks() {
-    for (LiveStock liveStock : liveStockList) {
-      boolean justWentBankrupt = liveStock.updatePrice();
+  public void updateAllStocks()
+  {
+    for (LiveStock liveStock : liveStockList)
+    {
+      liveStock.updatePrice();
 
-      notifyListeners(EventType.STOCK_UPDATED, new StockUpdateEvent(
-          liveStock.getSymbol(),
-          liveStock.getName(),
-          liveStock.getCurrentPrice(),
-          liveStock.getCurrentStateName()
-      ));
-      if (justWentBankrupt) {
-        notifyListeners(EventType.STOCK_BANKRUPT, liveStock);
+      notifyListeners(EventType.STOCK_UPDATED,
+          new StockUpdateEvent(liveStock.getSymbol(), liveStock.getName(),
+              liveStock.getCurrentPrice(), liveStock.getCurrentStateName()));
+
+      if (liveStock.getJustWentBankrupt())
+      {
+        notifyListeners(EventType.STOCK_BANKRUPT,
+            new StockBankruptEvent(liveStock.getSymbol()));
       }
+      /*
+      Alternativ er at lave LiveStock til Subject og StockMarket til listener.
+      Så ville flowet blive:
+      -> LiveStock (Subject)
+        -> notifyListeners(STOCK_BANKRUPT, event)
+          -> StockMarket (Listener) modtager det
+            -> notifyListeners(STOCK_BANKRUPT, event)
+              -> andre listeners modtager det
+      */
 
-      Logger.getInstance().log("INFO", liveStock.getSymbol() +
-          " | Price: " + liveStock.getCurrentPrice() +
-          " | State: " + liveStock.getCurrentStateName());
+      Logger.getInstance().log("INFO",
+          liveStock.getSymbol() + " | Price: " + liveStock.getCurrentPrice()
+              + " | State: " + liveStock.getCurrentStateName());
     }
   }
 
-  public Stream<LiveStock> getLiveStocks() {
-    return liveStockList.stream();
-  }
 }

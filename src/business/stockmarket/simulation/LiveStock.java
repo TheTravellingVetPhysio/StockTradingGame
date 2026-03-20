@@ -11,8 +11,10 @@ public class LiveStock
   private final String name;
   private StockState currentState;
   private double currentPrice;
+  private boolean justWentBankrupt = false;
 
-  private LiveStock(String symbol, String name, StockState currentState, double currentPrice)
+  private LiveStock(String symbol, String name, StockState currentState,
+      double currentPrice)
   {
     this.symbol = symbol;
     this.name = name;
@@ -28,13 +30,13 @@ public class LiveStock
             + random.nextDouble() * 100);
   }
 
-  public static LiveStock reloadFromStorage(String symbol, String name, String stateName,
-      double currentPrice)
+  public static LiveStock reloadFromStorage(String symbol, String name,
+      String stateName, double currentPrice)
   {
     return new LiveStock(symbol, name, mapState(stateName), currentPrice);
   }
 
-  public boolean updatePrice()
+  public void updatePrice()
   {
     String stateBefore = getCurrentStateName();
 
@@ -48,7 +50,15 @@ public class LiveStock
       Logger.getInstance().log("WARN", symbol + " has gone bankrupt!");
     }
 
-    return !stateBefore.equals(BankruptState.NAME) && getCurrentStateName().equals(BankruptState.NAME);
+    if (!stateBefore.equals(BankruptState.NAME) && getCurrentStateName().equals(
+        BankruptState.NAME)) {
+    justWentBankrupt = true;
+  }
+    ;
+  }
+
+  public boolean getJustWentBankrupt() {
+    return justWentBankrupt;
   }
 
   protected void setState(StockState newState)

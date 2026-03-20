@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Subject
+public abstract class Subject
 {
   private final Map<EventType, List<Listener>> listeners = new HashMap<>();
 
@@ -27,4 +27,6 @@ public class Subject
     for (Listener listener : listenersForEvent) {
       listener.update(arg);
     }
-  }}
+  }
+
+}

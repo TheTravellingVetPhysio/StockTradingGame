@@ -9,6 +9,7 @@ import entities.StockPriceHistory;
 import persistance.interfaces.StockDAO;
 import persistance.interfaces.StockPriceHistoryDAO;
 import persistance.interfaces.UnitOfWork;
+import shared.exceptions.ServiceLayerException;
 import shared.logging.Logger;
 
 import java.time.LocalDateTime;
@@ -69,10 +70,18 @@ public class StockListenerService extends Subject implements Listener
           + " | Price: " + event.price()
           + " | State: " + event.state());
     }
-    catch (Exception e)
+    catch (ServiceLayerException e)
     {
       unitOfWork.rollback();
       Logger.getInstance().log("ERROR", "Failed to update stock: " + e.getMessage());
+      throw e; // kast videre op
+    }
+    catch (Exception e)
+    {
+      unitOfWork.rollback();
+      Logger.getInstance().log("ERROR", "Unexpected error: " + e.getMessage());
+      throw new ServiceLayerException("Failed to update stock", e); // pak den ind og kast op
     }
   }
+
 }

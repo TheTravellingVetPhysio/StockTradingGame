@@ -10,5 +10,6 @@ public interface OwnedStockDAO
   void deleteOwnedStock(String id);
   OwnedStock getOwnedStockById(String id);
   List<OwnedStock> getOwnedStocksByPortfolioId(String portfolioId);
+  List<OwnedStock> getOwnedStocksBySymbol(String symbol);
   List<OwnedStock> getAllOwnedStocks();
 }

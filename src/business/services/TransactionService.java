@@ -114,9 +114,6 @@ public class TransactionService
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
       validateAvailabilityForTrade(stock, request.stockSymbol());
 
-      double pricePerShare = stock.getCurrentPrice();
-      double fee = AppConfig.getInstance().getTransactionFee();
-
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());
       validatePortfolio(portfolio, request.portfolioId());
@@ -127,6 +124,8 @@ public class TransactionService
       ownedStock.setNumberOfShares(updatedNumberOfShares);
       ownedStockDAO.updateOwnedStock(ownedStock);
 
+      double pricePerShare = stock.getCurrentPrice();
+      double fee = AppConfig.getInstance().getTransactionFee();
       double currentBalance = portfolio.getCurrentBalance();
       double completeAmount = pricePerShare * request.quantity() - fee;
 

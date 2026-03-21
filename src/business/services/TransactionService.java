@@ -107,12 +107,12 @@ public class TransactionService
     {
       validateMinimumQuantity(request.quantity());
 
+      Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
+      validateAvailabilityForTrade(stock, request.stockSymbol());
+
       OwnedStock ownedStock = ownedStockDAO.getOwnedStockByPortfolioIdAndSymbol(
           request.portfolioId(), request.stockSymbol());
       validateIfOwnedStockAndSellQuantity(request.quantity(), ownedStock);
-
-      Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      validateAvailabilityForTrade(stock, request.stockSymbol());
 
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());

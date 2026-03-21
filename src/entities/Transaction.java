@@ -25,16 +25,15 @@ public class Transaction
     this.type = type;
     this.quantity = quantity;
     this.pricePerShare = pricePerShare;
-    this.totalAmount = totalAmount;
+    this.totalAmount = totalAmount;   // pricePerShare * quantity
     this.fee = fee;
     this.timestamp = timestamp;
   }
 
   public static Transaction createNew(String portfolioId, String stockSymbol,
-      TransactionType type, int quantity, double pricePerShare,
-      double totalAmount, double fee, LocalDateTime timestamp)
+      TransactionType type, int quantity, double pricePerShare, double fee, LocalDateTime timestamp)
   {
-    return new Transaction(UUID.randomUUID().toString(), portfolioId, stockSymbol, type, quantity, pricePerShare, totalAmount, fee, timestamp);
+    return new Transaction(UUID.randomUUID().toString(), portfolioId, stockSymbol, type, quantity, pricePerShare, pricePerShare * quantity, fee, timestamp);
   }
 
   public static Transaction reloadFromStorage(String id, String portfolioId, String stockSymbol,

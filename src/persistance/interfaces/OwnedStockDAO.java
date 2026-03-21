@@ -12,4 +12,5 @@ public interface OwnedStockDAO
   List<OwnedStock> getOwnedStocksByPortfolioId(String portfolioId);
   List<OwnedStock> getOwnedStocksBySymbol(String symbol);
   List<OwnedStock> getAllOwnedStocks();
+  OwnedStock getOwnedStockByPortfolioIdAndSymbol(String portfolioId, String symbol);
 }

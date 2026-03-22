@@ -52,8 +52,8 @@ public class TransactionService
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());
       validatePortfolio(portfolio, request.portfolioId());
-      validateAvailableBalance(portfolio,
-          request.quantity(), pricePerShare, fee);
+      validateAvailableBalance(portfolio, request.quantity(), pricePerShare,
+          fee);
 
       OwnedStock ownedStock = ownedStockDAO.getOwnedStockByPortfolioIdAndSymbol(
           request.portfolioId(), request.stockSymbol());
@@ -121,8 +121,15 @@ public class TransactionService
       int currentNumberOfShares = ownedStock.getNumberOfShares();
       int updatedNumberOfShares = currentNumberOfShares - request.quantity();
 
-      ownedStock.setNumberOfShares(updatedNumberOfShares);
-      ownedStockDAO.updateOwnedStock(ownedStock);
+      if (updatedNumberOfShares == 0)
+      {
+        ownedStockDAO.deleteOwnedStock(ownedStock.getId());
+      }
+      else
+      {
+        ownedStock.setNumberOfShares(updatedNumberOfShares);
+        ownedStockDAO.updateOwnedStock(ownedStock);
+      }
 
       double pricePerShare = stock.getCurrentPrice();
       double fee = AppConfig.getInstance().getTransactionFee();
@@ -197,8 +204,8 @@ public class TransactionService
     }
   }
 
-  private void validateAvailableBalance(Portfolio portfolio,
-      int quantity, double pricePerShare, double fee)
+  private void validateAvailableBalance(Portfolio portfolio, int quantity,
+      double pricePerShare, double fee)
   {
     if (portfolio.getCurrentBalance() < (pricePerShare * quantity + fee))
     {

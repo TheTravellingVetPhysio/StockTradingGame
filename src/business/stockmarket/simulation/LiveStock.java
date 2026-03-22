@@ -12,28 +12,30 @@ public class LiveStock
   private StockState currentState;
   private double currentPrice;
   private boolean justWentBankrupt = false;
+  private double riskProfile;
 
   private LiveStock(String symbol, String name, StockState currentState,
-      double currentPrice)
+      double currentPrice, double riskProfile)
   {
     this.symbol = symbol;
     this.name = name;
     this.currentState = currentState;
     this.currentPrice = currentPrice;
+    this.riskProfile = riskProfile;
   }
 
-  public static LiveStock createNew(String symbol, String name)
+  public static LiveStock createNew(String symbol, String name, double riskProfile)
   {
     Random random = new Random();
     return new LiveStock(symbol, name, new SteadyState(),
         AppConfig.getInstance().getDefaultStockPrice()
-            + random.nextDouble() * 100);
+            + random.nextDouble() * 100, riskProfile);
   }
 
   public static LiveStock reloadFromStorage(String symbol, String name,
-      String stateName, double currentPrice)
+      String stateName, double currentPrice, double riskProfile)
   {
-    return new LiveStock(symbol, name, mapState(stateName), currentPrice);
+    return new LiveStock(symbol, name, mapState(stateName), currentPrice, riskProfile);
   }
 
   public void updatePrice()
@@ -101,5 +103,10 @@ public class LiveStock
   public String getCurrentStateName()
   {
     return currentState.getName();
+  }
+
+  public double getRiskProfile()
+  {
+    return riskProfile;
   }
 }

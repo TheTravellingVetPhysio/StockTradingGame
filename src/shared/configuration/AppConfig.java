@@ -1,7 +1,5 @@
 package shared.configuration;
 
-import java.util.Random;
-
 public class AppConfig
 {
   private static final AppConfig instance = new AppConfig();

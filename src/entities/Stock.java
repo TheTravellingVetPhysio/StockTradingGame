@@ -6,14 +6,16 @@ public class Stock
   private String name;
   private double currentPrice;
   private String currentState;
+  private double riskProfile;
 
   public Stock(String symbol, String name, double currentPrice,
-      String currentState)
+      String currentState, double riskProfile)
   {
     this.symbol = symbol;
     this.name = name;
     this.currentPrice = currentPrice;
     this.currentState = currentState;
+    this.riskProfile = riskProfile;
   }
 
   public String getSymbol()
@@ -34,6 +36,11 @@ public class Stock
   public String getCurrentState()
   {
     return currentState;
+  }
+
+  public double getRiskProfile()
+  {
+    return riskProfile;
   }
 
   public void setCurrentPrice(double currentPrice)

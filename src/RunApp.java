@@ -55,10 +55,10 @@ public class RunApp
       double defaultPrice = AppConfig.getInstance().getDefaultStockPrice();
 
       uow.beginTransaction();
-      stockDAO.createStock(new Stock("AAPL", "Apple", defaultPrice, SteadyState.NAME));
-      stockDAO.createStock(new Stock("GOOGL", "Google", defaultPrice, SteadyState.NAME));
-      stockDAO.createStock(new Stock("MSFT", "Microsoft", defaultPrice, SteadyState.NAME));
-      stockDAO.createStock(new Stock("VESTA", "Vestas", defaultPrice, SteadyState.NAME));
+      stockDAO.createStock(new Stock("AAPL", "Apple", defaultPrice, SteadyState.NAME, 1));
+      stockDAO.createStock(new Stock("GOOGL", "Google", defaultPrice, SteadyState.NAME, 1));
+      stockDAO.createStock(new Stock("MSFT", "Microsoft", defaultPrice, SteadyState.NAME, 0.9));
+      stockDAO.createStock(new Stock("VESTA", "Vestas", defaultPrice, SteadyState.NAME, 1.2));
       uow.commit();
 
       StockMarket.getInstance().addNewStock("AAPL", "Apple");

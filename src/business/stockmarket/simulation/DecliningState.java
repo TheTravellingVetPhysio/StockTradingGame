@@ -10,7 +10,7 @@ public class DecliningState implements StockState
   @Override
   public double calculatePriceChange(LiveStock stock)
   {
-    double changePercent = (random.nextDouble() * 3 - 2) / 100;
+    double changePercent = (random.nextDouble() * 3 - 2) / 100 * stock.getRiskProfile();
     double change = stock.getCurrentPrice() * changePercent;
 
     TransitionManager.getInstance().transition(stock, changePercent);

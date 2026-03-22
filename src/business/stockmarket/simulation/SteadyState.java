@@ -10,7 +10,7 @@ public class SteadyState implements StockState
   @Override
   public double calculatePriceChange(LiveStock stock)
   {
-    double changePercent = (random.nextDouble() * 2 - 0.5) / 100;
+    double changePercent = (random.nextDouble() * 2 - 0.5) / 100 * stock.getRiskProfile();
     double change = stock.getCurrentPrice() * changePercent;
 
     TransitionManager.getInstance().transition(stock, changePercent);

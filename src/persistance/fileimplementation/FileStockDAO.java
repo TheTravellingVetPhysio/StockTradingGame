@@ -71,7 +71,7 @@ public class FileStockDAO implements StockDAO
     {
       stocksCopy.add(
           new Stock(stock.getSymbol(), stock.getName(),
-              stock.getCurrentPrice(), stock.getCurrentState()));
+              stock.getCurrentPrice(), stock.getCurrentState(), stock.getRiskProfile()));
     }
     return stocksCopy;
   }

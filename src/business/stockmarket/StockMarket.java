@@ -25,16 +25,16 @@ public class StockMarket extends Subject
     return instance;
   }
 
-  public void addNewStock(String symbol, String name)
+  public void addNewStock(String symbol, String name, double riskProfile)
   {
-    liveStockList.add(LiveStock.createNew(symbol, name));
+    liveStockList.add(LiveStock.createNew(symbol, name, riskProfile));
   }
 
   public void addExistingStock(Stock stock)
   {
     liveStockList.add(
         LiveStock.reloadFromStorage(stock.getSymbol(), stock.getName(),
-            stock.getCurrentState(), stock.getCurrentPrice()));
+            stock.getCurrentState(), stock.getCurrentPrice(), stock.getRiskProfile()));
   }
 
   public void updateAllStocks()

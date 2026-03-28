@@ -41,19 +41,20 @@ public class TransactionService
 
     try
     {
-      validateMinimumQuantity(request.quantity());
+      ensureQuantityMoreThanZero(request.quantity());
 
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      validateAvailabilityForTrade(stock, request.stockSymbol());
+      ensureStockExists(stock, request.stockSymbol());
+      ensureStockIsNotBankrupt(stock, request.stockSymbol());
 
       double pricePerShare = stock.getCurrentPrice();
       double fee = AppConfig.getInstance().getTransactionFee();
 
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());
-      validatePortfolio(portfolio, request.portfolioId());
-      validateAvailableBalance(portfolio, request.quantity(), pricePerShare,
-          fee);
+      ensurePortfolioExists(portfolio, request.portfolioId());
+      ensureBalanceEqualOrLargerThanTotalCost(portfolio, request.quantity(),
+          pricePerShare, fee);
 
       OwnedStock ownedStock = ownedStockDAO.getOwnedStockByPortfolioIdAndSymbol(
           request.portfolioId(), request.stockSymbol());
@@ -105,18 +106,20 @@ public class TransactionService
 
     try
     {
-      validateMinimumQuantity(request.quantity());
+      ensureQuantityMoreThanZero(request.quantity());
 
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      validateAvailabilityForTrade(stock, request.stockSymbol());
+      ensureStockExists(stock, request.stockSymbol());
+      ensureStockIsNotBankrupt(stock, request.stockSymbol());
 
       OwnedStock ownedStock = ownedStockDAO.getOwnedStockByPortfolioIdAndSymbol(
           request.portfolioId(), request.stockSymbol());
-      validateIfOwnedStockAndSellQuantity(request.quantity(), ownedStock);
+      checkIfStockIsOwned(ownedStock);
+      ensureEnoughSharesOfOwnedStockToSell(request.quantity(), ownedStock);
 
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());
-      validatePortfolio(portfolio, request.portfolioId());
+      ensurePortfolioExists(portfolio, request.portfolioId());
 
       int currentNumberOfShares = ownedStock.getNumberOfShares();
       int updatedNumberOfShares = currentNumberOfShares - request.quantity();
@@ -158,7 +161,7 @@ public class TransactionService
     }
   }
 
-  private void validateMinimumQuantity(int quantity)
+  private void ensureQuantityMoreThanZero(int quantity)
   {
     if (quantity
         < 1)        // Ingen upper limit, bare for at undgå en masse 0-transaktioner
@@ -167,14 +170,17 @@ public class TransactionService
     }
   }
 
-  private void validateIfOwnedStockAndSellQuantity(int quantity,
-      OwnedStock ownedStock)
+  private void checkIfStockIsOwned(OwnedStock ownedStock)
   {
     if (ownedStock == null)
     {
       throw new IllegalArgumentException("Stock is not owned.");
     }
+  }
 
+  private void ensureEnoughSharesOfOwnedStockToSell(int quantity,
+      OwnedStock ownedStock)
+  {
     if (quantity > ownedStock.getNumberOfShares())
     {
       throw new IllegalArgumentException(
@@ -182,21 +188,24 @@ public class TransactionService
     }
   }
 
-  private void validateAvailabilityForTrade(Stock stock, String stockSymbol)
+  private void ensureStockExists(Stock stock, String stockSymbol)
   {
 
     if (stock == null)
     {
       throw new StockNotFoundException(stockSymbol);
     }
+  }
 
+  private void ensureStockIsNotBankrupt(Stock stock, String stockSymbol)
+  {
     if (stock.getCurrentState().equals(BankruptState.NAME))
     {
       throw new StockBankruptException(stock.getSymbol());
     }
   }
 
-  private void validatePortfolio(Portfolio portfolio, String portfolioId)
+  private void ensurePortfolioExists(Portfolio portfolio, String portfolioId)
   {
     if (portfolio == null)
     {
@@ -204,8 +213,8 @@ public class TransactionService
     }
   }
 
-  private void validateAvailableBalance(Portfolio portfolio, int quantity,
-      double pricePerShare, double fee)
+  private void ensureBalanceEqualOrLargerThanTotalCost(Portfolio portfolio,
+      int quantity, double pricePerShare, double fee)
   {
     if (portfolio.getCurrentBalance() < (pricePerShare * quantity + fee))
     {

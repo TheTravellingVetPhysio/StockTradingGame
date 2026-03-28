@@ -38,7 +38,7 @@ public class RunApp
         ownedStockDAO, uow);
     StockAlertService stockAlertService = new StockAlertService();
     TransactionService transactionService = new TransactionService(uow, ownedStockDAO, stockDAO, portfolioDAO, transactionDAO, logger);
-    PortfolioService portfolioService = new PortfolioService(ownedStockDAO, transactionDAO, portfolioDAO, stockDAO, logger);
+    PortfolioService portfolioService = new PortfolioService(ownedStockDAO, transactionDAO, portfolioDAO, stockDAO);
     StockMarketService stockMarketService = new StockMarketService(stockDAO, stockPriceHistoryDAO);
 
     // Listeners

@@ -8,8 +8,6 @@ import persistance.interfaces.OwnedStockDAO;
 import persistance.interfaces.PortfolioDAO;
 import persistance.interfaces.StockDAO;
 import persistance.interfaces.TransactionDAO;
-import shared.exceptions.PortfolioNotFoundException;
-import shared.exceptions.StockNotFoundException;
 import shared.logging.Logger;
 
 import java.util.List;
@@ -20,17 +18,15 @@ public class PortfolioService
   private final TransactionDAO transactionDAO;
   private final PortfolioDAO portfolioDAO;
   private final StockDAO stockDAO;
-  private final Logger logger;
 
   public PortfolioService(OwnedStockDAO ownedStockDAO,
       TransactionDAO transactionDAO, PortfolioDAO portfolioDAO,
-      StockDAO stockDAO, Logger logger)
+      StockDAO stockDAO)
   {
     this.ownedStockDAO = ownedStockDAO;
     this.transactionDAO = transactionDAO;
     this.portfolioDAO = portfolioDAO;
     this.stockDAO = stockDAO;
-    this.logger = logger;
   }
 
   public List<OwnedStock> getOwnedStocks(String portfolioId)
@@ -38,22 +34,20 @@ public class PortfolioService
     return ownedStockDAO.getOwnedStocksByPortfolioId(portfolioId);
   }
 
-  public List<Transaction> getTransactionHistory(String portfolioId)
+  public List<Transaction> getTransactionHistory(String portfolioId, int page,
+      int pagesize)
   {
-    return transactionDAO.getTransactionsByPortfolioId(portfolioId);
+    List<Transaction> allTransactions = transactionDAO.getTransactionsByPortfolioId(
+        portfolioId);
+    int from = page * pagesize;
+    int to = Math.min(from + pagesize, allTransactions.size());
+
+    return allTransactions.subList(from, to);
   }
 
   public double getPortfolioBalance(String portfolioId)
   {
     Portfolio portfolio = portfolioDAO.getPortfolioById(portfolioId);
-
-    if (portfolio == null)
-    {
-      PortfolioNotFoundException e = new PortfolioNotFoundException(portfolioId);
-      logger.log("ERROR", e.getMessage());
-      throw e;
-    }
-
     return portfolio.getCurrentBalance();
   }
 
@@ -66,12 +60,6 @@ public class PortfolioService
     for (OwnedStock ownedStock : ownedStocks)
     {
       Stock stock = stockDAO.getStockBySymbol(ownedStock.getStockSymbol());
-      if (stock == null) {
-        StockNotFoundException e = new StockNotFoundException(ownedStock.getStockSymbol());
-        logger.log("ERROR", e.getMessage());
-        throw e;
-      }
-
       stockValue += ownedStock.getNumberOfShares() * stock.getCurrentPrice();
     }
 

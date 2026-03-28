@@ -7,9 +7,7 @@ import entities.*;
 import persistance.interfaces.*;
 import shared.configuration.AppConfig;
 import shared.exceptions.InsufficientFundsException;
-import shared.exceptions.PortfolioNotFoundException;
 import shared.exceptions.StockBankruptException;
-import shared.exceptions.StockNotFoundException;
 import shared.logging.Logger;
 
 import java.time.LocalDateTime;
@@ -44,7 +42,7 @@ public class TransactionService
       ensureQuantityMoreThanZero(request.quantity());
 
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      ensureStockIsNotBankrupt(stock, request.stockSymbol());
+      ensureStockIsNotBankrupt(stock);
 
       double pricePerShare = stock.getCurrentPrice();
       double fee = AppConfig.getInstance().getTransactionFee();
@@ -107,7 +105,7 @@ public class TransactionService
       ensureQuantityMoreThanZero(request.quantity());
 
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      ensureStockIsNotBankrupt(stock, request.stockSymbol());
+      ensureStockIsNotBankrupt(stock);
 
       OwnedStock ownedStock = ownedStockDAO.getOwnedStockByPortfolioIdAndSymbol(
           request.portfolioId(), request.stockSymbol());
@@ -184,7 +182,7 @@ public class TransactionService
     }
   }
 
-  private void ensureStockIsNotBankrupt(Stock stock, String stockSymbol)
+  private void ensureStockIsNotBankrupt(Stock stock)
   {
     if (stock.getCurrentState().equals(BankruptState.NAME))
     {

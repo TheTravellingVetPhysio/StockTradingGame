@@ -3,6 +3,7 @@ package persistance.fileimplementation;
 import entities.Transaction;
 import entities.TransactionType;
 import persistance.interfaces.TransactionDAO;
+import shared.exceptions.NotFoundException;
 import shared.logging.Logger;
 
 import java.util.ArrayList;
@@ -37,8 +38,7 @@ public class FileTransactionDAO implements TransactionDAO
         return transaction;
       }
     }
-    Logger.getInstance().log("ERROR", "Transaction not found: " + id);
-    throw new RuntimeException("Transaction not found: " + id);
+    throw new NotFoundException("Transaction not found: " + id);
   }
 
   @Override public List<Transaction> getTransactionsByPortfolioId(String portfolioId)

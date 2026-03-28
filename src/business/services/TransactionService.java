@@ -44,7 +44,6 @@ public class TransactionService
       ensureQuantityMoreThanZero(request.quantity());
 
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      ensureStockExists(stock, request.stockSymbol());
       ensureStockIsNotBankrupt(stock, request.stockSymbol());
 
       double pricePerShare = stock.getCurrentPrice();
@@ -52,7 +51,6 @@ public class TransactionService
 
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());
-      ensurePortfolioExists(portfolio, request.portfolioId());
       ensureBalanceEqualOrLargerThanTotalCost(portfolio, request.quantity(),
           pricePerShare, fee);
 
@@ -109,7 +107,6 @@ public class TransactionService
       ensureQuantityMoreThanZero(request.quantity());
 
       Stock stock = stockDAO.getStockBySymbol(request.stockSymbol());
-      ensureStockExists(stock, request.stockSymbol());
       ensureStockIsNotBankrupt(stock, request.stockSymbol());
 
       OwnedStock ownedStock = ownedStockDAO.getOwnedStockByPortfolioIdAndSymbol(
@@ -119,7 +116,6 @@ public class TransactionService
 
       Portfolio portfolio = portfolioDAO.getPortfolioById(
           request.portfolioId());
-      ensurePortfolioExists(portfolio, request.portfolioId());
 
       int currentNumberOfShares = ownedStock.getNumberOfShares();
       int updatedNumberOfShares = currentNumberOfShares - request.quantity();
@@ -188,28 +184,11 @@ public class TransactionService
     }
   }
 
-  private void ensureStockExists(Stock stock, String stockSymbol)
-  {
-
-    if (stock == null)
-    {
-      throw new StockNotFoundException(stockSymbol);
-    }
-  }
-
   private void ensureStockIsNotBankrupt(Stock stock, String stockSymbol)
   {
     if (stock.getCurrentState().equals(BankruptState.NAME))
     {
       throw new StockBankruptException(stock.getSymbol());
-    }
-  }
-
-  private void ensurePortfolioExists(Portfolio portfolio, String portfolioId)
-  {
-    if (portfolio == null)
-    {
-      throw new PortfolioNotFoundException(portfolioId);
     }
   }
 

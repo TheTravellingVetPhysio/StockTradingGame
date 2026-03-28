@@ -2,6 +2,7 @@ package persistance.fileimplementation;
 
 import entities.Portfolio;
 import persistance.interfaces.PortfolioDAO;
+import shared.exceptions.NotFoundException;
 import shared.logging.Logger;
 
 import java.util.ArrayList;
@@ -32,9 +33,7 @@ public class FilePortfolioDAO implements PortfolioDAO
         return;
       }
     }
-    Logger.getInstance()
-        .log("ERROR", "Portfolio not found: " + portfolio.getId());
-    throw new RuntimeException("Portfolio not found: " + portfolio.getId());
+    throw new NotFoundException("Portfolio not found: " + portfolio.getId());
   }
 
   @Override public void deletePortfolio(String id)
@@ -43,8 +42,7 @@ public class FilePortfolioDAO implements PortfolioDAO
     boolean removed = portfolios.removeIf(portfolio -> portfolio.getId().equals(id));
     if (!removed)
     {
-      Logger.getInstance().log("ERROR", "Portfolio not found: " + id);
-      throw new RuntimeException("Portfolio not found: " + id);
+      throw new NotFoundException("Portfolio not found: " + id);
     }
   }
 
@@ -58,8 +56,7 @@ public class FilePortfolioDAO implements PortfolioDAO
         return portfolio;
       }
     }
-    Logger.getInstance().log("ERROR", "Portfolio not found: " + id);
-    throw new RuntimeException("Portfolio not found: " + id);
+    throw new NotFoundException("Portfolio not found: " + id);
   }
 
   @Override public Portfolio getPortfolioByName(String name)
@@ -72,8 +69,7 @@ public class FilePortfolioDAO implements PortfolioDAO
         return portfolio;
       }
     }
-    Logger.getInstance().log("ERROR", "Portfolio not found: " + name);
-    throw new RuntimeException("Portfolio not found: " + name);
+    throw new NotFoundException("Portfolio not found: " + name);
   }
 
   @Override public List<Portfolio> getAllPortfolios()

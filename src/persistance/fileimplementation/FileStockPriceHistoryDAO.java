@@ -2,6 +2,7 @@ package persistance.fileimplementation;
 
 import entities.StockPriceHistory;
 import persistance.interfaces.StockPriceHistoryDAO;
+import shared.exceptions.NotFoundException;
 import shared.logging.Logger;
 
 import java.util.ArrayList;
@@ -36,8 +37,7 @@ public class FileStockPriceHistoryDAO implements StockPriceHistoryDAO
         return stockPriceHistory;
       }
     }
-    Logger.getInstance().log("ERROR", "StockPriceHistory not found: " + id);
-    throw new RuntimeException("StockPriceHistory not found: " + id);
+    throw new NotFoundException("StockPriceHistory not found: " + id);
   }
 
   @Override public List<StockPriceHistory> getStockPriceHistoryBySymbol(String stockSymbol)

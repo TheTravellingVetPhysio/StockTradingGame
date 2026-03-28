@@ -2,6 +2,7 @@ package persistance.fileimplementation;
 
 import entities.OwnedStock;
 import persistance.interfaces.OwnedStockDAO;
+import shared.exceptions.NotFoundException;
 import shared.logging.Logger;
 
 import java.util.List;
@@ -31,8 +32,7 @@ public class FileOwnedStockDAO implements OwnedStockDAO
         return;
       }
     }
-    Logger.getInstance().log("ERROR", "OwnedStock not found: " + ownedStock.getId());
-    throw new RuntimeException("OwnedStock not found: " + ownedStock.getId());
+    throw new NotFoundException("OwnedStock not found: " + ownedStock.getId());
   }
 
   @Override public void deleteOwnedStock(String id)
@@ -41,8 +41,7 @@ public class FileOwnedStockDAO implements OwnedStockDAO
     boolean removed = ownedStocks.removeIf(ownedStock -> ownedStock.getId().equals(id));
     if (!removed)
     {
-      Logger.getInstance().log("ERROR", "OwnedStock not found: " + id);
-      throw new RuntimeException("OwnedStock not found: " + id);
+      throw new NotFoundException("OwnedStock not found: " + id);
     }
   }
 
@@ -56,8 +55,7 @@ public class FileOwnedStockDAO implements OwnedStockDAO
         return ownedStock;
       }
     }
-    Logger.getInstance().log("ERROR", "OwnedStock not found: " + id);
-    throw new RuntimeException("OwnedStock not found: " + id);
+    throw new NotFoundException("OwnedStock not found: " + id);
   }
 
   @Override

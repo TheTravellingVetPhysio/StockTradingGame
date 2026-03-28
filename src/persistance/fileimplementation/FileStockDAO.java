@@ -2,6 +2,7 @@ package persistance.fileimplementation;
 
 import entities.Stock;
 import persistance.interfaces.StockDAO;
+import shared.exceptions.NotFoundException;
 import shared.logging.Logger;
 
 import java.util.ArrayList;
@@ -32,9 +33,7 @@ public class FileStockDAO implements StockDAO
         return;
       }
     }
-    Logger.getInstance()
-        .log("ERROR", "Stock not found: " + stock.getSymbol());
-    throw new RuntimeException("Stock not found: " + stock.getSymbol());
+      throw new NotFoundException("Stock not found: " + stock.getSymbol());
   }
 
   @Override public void deleteStock(String stockSymbol)
@@ -43,8 +42,7 @@ public class FileStockDAO implements StockDAO
     boolean removed = stocks.removeIf(stock -> stock.getSymbol().equals(stockSymbol));
     if (!removed)
     {
-      Logger.getInstance().log("ERROR", "Stock not found: " + stockSymbol);
-      throw new RuntimeException("Stock not found: " + stockSymbol);
+      throw new NotFoundException("Stock not found: " + stockSymbol);
     }
   }
 
@@ -58,8 +56,7 @@ public class FileStockDAO implements StockDAO
         return stock;
       }
     }
-    Logger.getInstance().log("ERROR", "Stock not found: " + stockSymbol);
-    throw new RuntimeException("Stock not found: " + stockSymbol);
+    throw new NotFoundException("Stock not found: " + stockSymbol);
   }
 
   @Override public List<Stock> getAllStocks()

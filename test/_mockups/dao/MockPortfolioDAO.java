@@ -1,29 +1,24 @@
-package persistance.fileimplementation;
+package _mockups.dao;
 
 import entities.Portfolio;
+import persistance.fileimplementation.FileUnitOfWork;
 import persistance.interfaces.PortfolioDAO;
 import shared.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilePortfolioDAO implements PortfolioDAO
+public class MockPortfolioDAO implements PortfolioDAO
 {
-  FileUnitOfWork uow;
-
-  public FilePortfolioDAO(FileUnitOfWork uow)
-  {
-    this.uow = uow;
-  }
+  private List<Portfolio> portfolios = new ArrayList<>();
 
   public void createPortfolio(Portfolio portfolio)
   {
-    uow.getPortfolioList().add(portfolio);
+    portfolios.add(portfolio);
   }
 
   @Override public void updatePortfolio(Portfolio portfolio)
   {
-    List<Portfolio> portfolios = uow.getPortfolioList();
     for (int i = 0; i < portfolios.size(); i++)
     {
       if (portfolios.get(i).getId().equals(portfolio.getId()))
@@ -37,8 +32,8 @@ public class FilePortfolioDAO implements PortfolioDAO
 
   @Override public void deletePortfolio(String id)
   {
-    List<Portfolio> portfolios = uow.getPortfolioList();
-    boolean removed = portfolios.removeIf(portfolio -> portfolio.getId().equals(id));
+    boolean removed = portfolios.removeIf(
+        portfolio -> portfolio.getId().equals(id));
     if (!removed)
     {
       throw new NotFoundException("Portfolio not found: " + id);
@@ -47,7 +42,6 @@ public class FilePortfolioDAO implements PortfolioDAO
 
   @Override public Portfolio getPortfolioById(String id)
   {
-    List<Portfolio> portfolios = uow.getPortfolioList();
     for (Portfolio portfolio : portfolios)
     {
       if (portfolio.getId().equals(id))
@@ -60,7 +54,6 @@ public class FilePortfolioDAO implements PortfolioDAO
 
   @Override public Portfolio getPortfolioByName(String name)
   {
-    List<Portfolio> portfolios = uow.getPortfolioList();
     for (Portfolio portfolio : portfolios)
     {
       if (portfolio.getName().equalsIgnoreCase(name))
@@ -73,7 +66,6 @@ public class FilePortfolioDAO implements PortfolioDAO
 
   @Override public List<Portfolio> getAllPortfolios()
   {
-    List<Portfolio> portfolios = uow.getPortfolioList();
     List<Portfolio> portfoliosCopy = new ArrayList<>();
     for (Portfolio portfolio : portfolios)
     {
@@ -83,4 +75,5 @@ public class FilePortfolioDAO implements PortfolioDAO
     }
     return portfoliosCopy;
   }
+
 }

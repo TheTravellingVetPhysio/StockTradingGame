@@ -9,6 +9,7 @@ import entities.Stock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import persistance.interfaces.UnitOfWork;
+import shared.configuration.AppConfig;
 import shared.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,6 +21,7 @@ public class BuyStockTests
   MockOwnedStockDAO mockOwnedStockDAO;
   MockTransactionDAO mockTransactionDAO;
   UnitOfWork uow;
+  AppConfig config;
 
   TransactionService transactionService;
 
@@ -40,8 +42,8 @@ public class BuyStockTests
   {
     // Arrange
     Portfolio portfolio = Portfolio.createNew("Test");
-    mockPortfolioDAO.createPortfolio(portfolio);
     portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.createPortfolio(portfolio);
     String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
@@ -52,6 +54,63 @@ public class BuyStockTests
 
     // Assert
     assertEquals(1, mockOwnedStockDAO.getAllOwnedStocks().size());
+  }
+
+  @Test void buyStock_NewStockWithSufficientFunds_SetsCorrectNumberOfShares()
+  {
+    // Arrange
+    Portfolio portfolio = Portfolio.createNew("Test");
+    portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.createPortfolio(portfolio);
+    String portfolioId = portfolio.getId();
+
+    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
+    String stockSymbol = stock.getSymbol();
+    mockStockDAO.createStock(stock);
+
+    // Act
+    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+
+    // Assert
+    assertEquals(10, mockOwnedStockDAO.getOwnedStockByPortfolioIdAndSymbol(portfolioId, stockSymbol).getNumberOfShares());
+  }
+
+  @Test void buyStock_NewStockWithSufficientFunds_PortfolioBalanceDeductsTotalAmount()
+  {
+    // Arrange
+    Portfolio portfolio = Portfolio.createNew("Test");
+    mockPortfolioDAO.createPortfolio(portfolio);
+    portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.updatePortfolio(portfolio);
+    String portfolioId = portfolio.getId();
+
+    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
+    mockStockDAO.createStock(stock);
+
+    System.out.println(portfolio.getCurrentBalance());
+    // Act
+    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+
+    // Assert
+    assertEquals((900-AppConfig.getInstance().getTransactionFee()), portfolio.getCurrentBalance());
+  }
+
+  @Test void buyStock_NewStockWithSufficientFunds_CreatesTransaction()
+  {
+    // Arrange
+    Portfolio portfolio = Portfolio.createNew("Test");
+    portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.createPortfolio(portfolio);
+    String portfolioId = portfolio.getId();
+
+    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
+    mockStockDAO.createStock(stock);
+
+    // Act
+    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+
+    // Assert
+    assertEquals(1, mockTransactionDAO.getAllTransactions().size());
   }
 
 }

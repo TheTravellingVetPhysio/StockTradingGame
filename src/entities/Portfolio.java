@@ -47,8 +47,8 @@ public class Portfolio
     this.name = name;
   }
 
-  public void setCurrentBalance(double transactionAmount)
+  public void setCurrentBalance(double newBalance)
   {
-    this.currentBalance = currentBalance + transactionAmount;
+    this.currentBalance = newBalance;
   }
 }

@@ -2,10 +2,7 @@ package transactionservicetests;
 
 import _mockups.dao.*;
 import business.services.TransactionService;
-import business.stockmarket.simulation.BankruptState;
-import business.stockmarket.simulation.DecliningState;
-import business.stockmarket.simulation.GrowingState;
-import business.stockmarket.simulation.SteadyState;
+import business.stockmarket.simulation.*;
 import dto.StockBuyRequest;
 import entities.Portfolio;
 import entities.Stock;
@@ -44,6 +41,8 @@ public class BuyStockTests
         Logger.getInstance());
   }
 
+  // QUANTITY VALIDATION (BVA)
+
   @ParameterizedTest @ValueSource(ints = {0,
       -1})      // BoundaryValueAnalysis - negativ
   void buyStock_QuantityLessThanOne_ThrowsIllegalArgumentException(
@@ -53,7 +52,6 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
@@ -61,7 +59,7 @@ public class BuyStockTests
     // Act & Assert
     assertThrows(IllegalArgumentException.class,
         () -> transactionService.buyStock(
-            new StockBuyRequest(portfolioId, "VESTA", invalidQuantity)));
+            new StockBuyRequest(portfolio.getId(), "VESTA", invalidQuantity)));
   }
 
   @ParameterizedTest @ValueSource(ints = {1,
@@ -72,15 +70,16 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
     assertDoesNotThrow(() -> transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", validQuantity)));
+        new StockBuyRequest(portfolio.getId(), "VESTA", validQuantity)));
   }
+
+  // NOT FOUND EXCEPTIONS
 
   @Test void buyStock_StockExists_ShouldNotThrow()
   {
@@ -88,14 +87,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
     assertDoesNotThrow(() -> transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", 10)));
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_StockDoesNotExists_ThrowsNotFoundException()
@@ -104,13 +102,10 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     // Act & Assert
-    assertThrows(NotFoundException.class, () ->
-    transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", 10))
-    );
+    assertThrows(NotFoundException.class, () -> transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_PortfolioExists_ShouldNotThrow()
@@ -119,14 +114,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
     assertDoesNotThrow(() -> transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", 10)));
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_PortfolioDoesNotExists_ThrowsNotFoundException()
@@ -136,11 +130,11 @@ public class BuyStockTests
     mockStockDAO.createStock(stock);
 
     // Act & Assert
-    assertThrows(NotFoundException.class, () ->
-        transactionService.buyStock(
-            new StockBuyRequest("0000", "VESTA", 10))
-    );
+    assertThrows(NotFoundException.class, () -> transactionService.buyStock(
+        new StockBuyRequest("0000", "VESTA", 10)));
   }
+
+  // STOCK STATE
 
   @Test void buyStock_InSteadyState_ShouldNotThrow()
   {
@@ -148,14 +142,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
     assertDoesNotThrow(() -> transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", 10)));
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_InGrowingState_ShouldNotThrow()
@@ -164,14 +157,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, GrowingState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
     assertDoesNotThrow(() -> transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", 10)));
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_InDecliningState_ShouldNotThrow()
@@ -180,14 +172,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, DecliningState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
     assertDoesNotThrow(() -> transactionService.buyStock(
-        new StockBuyRequest(portfolioId, "VESTA", 10)));
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_InBankruptState_ThrowsException()
@@ -196,16 +187,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, BankruptState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
-    assertThrows(Exception.class, () ->
-        transactionService.buyStock(
-            new StockBuyRequest(portfolioId, "VESTA", 10))
-    );
+    assertThrows(Exception.class, () -> transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
 
   @Test void buyStock_StockPriceIsZeroAndBankruptState_ThrowsException()
@@ -222,17 +210,16 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 0, BankruptState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act & Assert
-    assertThrows(Exception.class, () ->
-        transactionService.buyStock(
-            new StockBuyRequest(portfolioId, "VESTA", 10))
-    );
+    assertThrows(Exception.class, () -> transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
   }
+
+  // PURCHASE OF NEW STOCKS
 
   @Test void buyStock_BuyNewStock_CreatesNewOwnedStock()
   {
@@ -240,13 +227,13 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
     assertEquals(1, mockOwnedStockDAO.getAllOwnedStocks().size());
@@ -258,80 +245,22 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     String stockSymbol = stock.getSymbol();
     mockStockDAO.createStock(stock);
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
     assertEquals(10,
-        mockOwnedStockDAO.getOwnedStockByPortfolioIdAndSymbol(portfolioId,
+        mockOwnedStockDAO.getOwnedStockByPortfolioIdAndSymbol(portfolio.getId(),
             stockSymbol).getNumberOfShares());
   }
 
-  @Test void buyStock_WithBalanceLargerThanTotalAmount_PortfolioBalanceDeductsTotalAmount()
-  {
-    // Arrange
-    Portfolio portfolio = Portfolio.createNew(
-        "Test");  // bliver oprettet med balance på 10.000
-    portfolio.setCurrentBalance(1000);
-    mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
-
-    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
-    mockStockDAO.createStock(stock);
-
-    // System.out.println(portfolio.getCurrentBalance());
-    // System.out.println(mockPortfolioDAO.getPortfolioById(portfolioId).getCurrentBalance());
-
-    // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
-
-    // Assert
-    assertEquals((900 - AppConfig.getInstance().getTransactionFee()),
-        portfolio.getCurrentBalance());
-  }
-
-  @Test void buyStock_WithBalanceSameAsTotalAmount_BalanceBecomesZero()
-  {
-    // Arrange
-    Portfolio portfolio = Portfolio.createNew(
-        "Test");
-    portfolio.setCurrentBalance(1000);
-    mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
-
-    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
-    mockStockDAO.createStock(stock);
-
-    // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 95));     // Transaction Fee = 50
-
-    // Assert
-    assertEquals(0,
-        portfolio.getCurrentBalance());
-  }
-
-  @Test void buyStock_WithInsufficientFunds_ThrowsInsufficientFundsException()
-  {
-    // Arrange
-    Portfolio portfolio = Portfolio.createNew("Test");
-    portfolio.setCurrentBalance(1000);
-    mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
-
-    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
-    mockStockDAO.createStock(stock);
-
-    // Act & Assert
-    assertThrows(InsufficientFundsException.class,
-        () -> transactionService.buyStock(
-            new StockBuyRequest(portfolioId, "VESTA", 100)));       // Should be insuffiecient because of the transaction fee on top
-  }
+  // PURCHASE OF OWNED STOCKS
 
   @Test void buyStock_BuyAlreadyOwnedStock_DoesNotCreateDuplicateOwnedStock()
   {
@@ -339,16 +268,16 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
-    String stockSymbol = stock.getSymbol();
     mockStockDAO.createStock(stock);
 
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 5));
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 5));
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
     assertEquals(1, mockOwnedStockDAO.getAllOwnedStocks().size());
@@ -360,20 +289,21 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     String stockSymbol = stock.getSymbol();
     mockStockDAO.createStock(stock);
 
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 5));
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 5));
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
     assertEquals(15,
-        mockOwnedStockDAO.getOwnedStockByPortfolioIdAndSymbol(portfolioId,
+        mockOwnedStockDAO.getOwnedStockByPortfolioIdAndSymbol(portfolio.getId(),
             stockSymbol).getNumberOfShares());
   }
 
@@ -383,7 +313,6 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock vesta = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     Stock novo = new Stock("NOVO", "Novo", 10, SteadyState.NAME, 1);
@@ -392,11 +321,67 @@ public class BuyStockTests
     mockStockDAO.createStock(novo);
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "NOVO", 10));
+    transactionService.buyStock(new StockBuyRequest(portfolio.getId(), "VESTA", 10));
+    transactionService.buyStock(new StockBuyRequest(portfolio.getId(), "NOVO", 10));
 
     // Assert
     assertEquals(2, mockOwnedStockDAO.getAllOwnedStocks().size());
+  }
+
+  // PORTFOLIO BALANCE UPDATES AND TRANSACTION
+
+  @Test void buyStock_WithBalanceLargerThanTotalAmount_PortfolioBalanceDeductsTotalAmount()
+  {
+    // Arrange
+    Portfolio portfolio = Portfolio.createNew("Test");
+    portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.createPortfolio(portfolio);
+
+    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
+    mockStockDAO.createStock(stock);
+
+    // Act
+    transactionService.buyStock(
+        new StockBuyRequest(portfolio.getId(), "VESTA", 10));
+
+    // Assert
+    assertEquals((900 - AppConfig.getInstance().getTransactionFee()),
+        portfolio.getCurrentBalance());
+  }
+
+  @Test void buyStock_WithBalanceSameAsTotalAmount_BalanceBecomesZero()
+  {
+    // Arrange
+    Portfolio portfolio = Portfolio.createNew("Test");
+    portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.createPortfolio(portfolio);
+
+    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
+    mockStockDAO.createStock(stock);
+
+    // Act
+    transactionService.buyStock(new StockBuyRequest(portfolio.getId(), "VESTA",
+        95));     // Transaction Fee = 50
+
+    // Assert
+    assertEquals(0, portfolio.getCurrentBalance());
+  }
+
+  @Test void buyStock_WithInsufficientFunds_ThrowsInsufficientFundsException()
+  {
+    // Arrange
+    Portfolio portfolio = Portfolio.createNew("Test");
+    portfolio.setCurrentBalance(1000);
+    mockPortfolioDAO.createPortfolio(portfolio);
+
+    Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
+    mockStockDAO.createStock(stock);
+
+    // Act & Assert
+    assertThrows(InsufficientFundsException.class,
+        () -> transactionService.buyStock(
+            new StockBuyRequest(portfolio.getId(), "VESTA",
+                100)));       // Should be insuffiecient because of the transaction fee on top
   }
 
   @Test void buyStock_CreatesTransaction()
@@ -405,13 +390,12 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
     assertEquals(1, mockTransactionDAO.getAllTransactions().size());
@@ -423,7 +407,6 @@ public class BuyStockTests
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
@@ -431,55 +414,52 @@ public class BuyStockTests
     double expectedFee = AppConfig.getInstance().getTransactionFee();
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
-    assertEquals(expectedFee, mockTransactionDAO.getAllTransactions().getFirst().getFee());
+    assertEquals(expectedFee,
+        mockTransactionDAO.getAllTransactions().getFirst().getFee());
     assertEquals(1000 - (10 * 10 + expectedFee), portfolio.getCurrentBalance());
   }
 
+  // UNIT OF WORK
 
-  @Test
-  void buyStock_SuccessfulPurchase_CallsCommit()
+  @Test void buyStock_SuccessfulPurchase_CallsCommit()
   {
     // Arrange
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(1000);
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act
-    transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10));
+    transactionService.buyStock(new StockBuyRequest(portfolio.getId(), "VESTA", 10));
 
     // Assert
-    assertTrue(((MockUnitOfWork)uow).commitCalled);
-    assertFalse(((MockUnitOfWork)uow).rollbackCalled);
+    assertTrue(((MockUnitOfWork) uow).commitCalled);
+    assertFalse(((MockUnitOfWork) uow).rollbackCalled);
   }
 
-
-  @Test
-  void buyStock_FailureThrown_CallsRollback()
+  @Test void buyStock_FailureThrown_CallsRollback()
   {
     // Arrange
     Portfolio portfolio = Portfolio.createNew("Test");
     portfolio.setCurrentBalance(0); // Throws InsufficientFundsException
     mockPortfolioDAO.createPortfolio(portfolio);
-    String portfolioId = portfolio.getId();
 
     Stock stock = new Stock("VESTA", "Vestas", 10, SteadyState.NAME, 1);
     mockStockDAO.createStock(stock);
 
     // Act
-    assertThrows(InsufficientFundsException.class, () ->
-        transactionService.buyStock(new StockBuyRequest(portfolioId, "VESTA", 10))
-    );
+    assertThrows(InsufficientFundsException.class,
+        () -> transactionService.buyStock(
+            new StockBuyRequest(portfolio.getId(), "VESTA", 10)));
 
     // Assert
-    assertTrue(((MockUnitOfWork)uow).rollbackCalled);
-    assertFalse(((MockUnitOfWork)uow).commitCalled);
+    assertTrue(((MockUnitOfWork) uow).rollbackCalled);
+    assertFalse(((MockUnitOfWork) uow).commitCalled);
   }
 
 }

@@ -5,7 +5,9 @@ import business.services.StockMarketService;
 import business.services.TransactionService;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -16,7 +18,7 @@ import presentation.viewmodels.StockMarketViewModel;
 
 public class StockMarketController
 {
-  @FXML private LineChart<String, Number> stockChart;
+  @FXML private LineChart<Number, Number> stockChart;
   @FXML private TableView<StockUI> stockTable;
   @FXML private TextField searchField;
   @FXML private TableColumn<StockUI, Boolean> selectedColumn;
@@ -40,10 +42,14 @@ public class StockMarketController
     stockTable.setEditable(true);
     selectedColumn.setEditable(true);
 
+    NumberAxis xAxis = (NumberAxis) stockChart.getXAxis();
+    xAxis.setTickLabelsVisible(false);
+
     symbolColumn.setCellValueFactory(data -> data.getValue().symbolProperty());
     nameColumn.setCellValueFactory(data -> data.getValue().nameProperty());
 
-    stateColumn.setCellValueFactory(data -> data.getValue().displayStateProperty());
+    stateColumn.setCellValueFactory(
+        data -> data.getValue().displayStateProperty());
 
     priceColumn.setCellValueFactory(
         data -> data.getValue().priceProperty().asObject());
@@ -59,7 +65,8 @@ public class StockMarketController
       }
     });
 
-    selectedColumn.setCellValueFactory(data -> data.getValue().selectedProperty());
+    selectedColumn.setCellValueFactory(
+        data -> data.getValue().selectedProperty());
     selectedColumn.setCellFactory(
         CheckBoxTableCell.forTableColumn(selectedColumn));
 
@@ -71,22 +78,53 @@ public class StockMarketController
     stockTable.minHeightProperty().bind(stockTable.prefHeightProperty());
     stockTable.maxHeightProperty().bind(stockTable.prefHeightProperty());
 
+    stockMarketViewModel.getStocksUI().forEach(ui -> {
+      ui.selectedProperty().addListener((obs, oldV, newV) -> {
+        updateChart();
+      });
+    });
+
+    updateChart();
+    stockMarketViewModel.setOnChartDataUpdated(() -> updateChart());
+  }
+
+  private void updateChart()
+  {
+    stockChart.getData().clear();
+    stockChart.getData().addAll(stockMarketViewModel.buildSelectedSeries());
+
+    // Auto-skalering
+    NumberAxis yAxis = (NumberAxis) stockChart.getYAxis();
+    yAxis.setAutoRanging(false);
+    yAxis.setForceZeroInRange(false);
+    yAxis.setLowerBound(Double.NaN);
+    yAxis.setUpperBound(Double.NaN);
+    yAxis.setAutoRanging(true);
+
   }
 
   @FXML private void onSevenTicksClicked()
   {
+    stockMarketViewModel.setTickRange(7);
+    updateChart();
   }
 
   @FXML private void onThirtyTicksClicked()
   {
+    stockMarketViewModel.setTickRange(30);
+    updateChart();
   }
 
   @FXML private void onThreeSixFiveTicksClicked()
   {
+    stockMarketViewModel.setTickRange(365);
+    updateChart();
   }
 
   @FXML private void onEighteenTwentyFiveTicksClicked()
   {
+    stockMarketViewModel.setTickRange(1825);
+    updateChart();
   }
 
 }

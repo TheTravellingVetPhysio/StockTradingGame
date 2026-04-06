@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -21,13 +20,14 @@
     <Label text="StockMarket" styleClass="section-title"/>
 
     <VBox spacing="10.0">
-        <LineChart fx:id="stockChart" minHeight="300" prefHeight="400.0"
-                   VBox.vgrow="NEVER">
+
+        <LineChart fx:id="stockChart" animated="false" createSymbols="false"
+                   prefHeight="400" minHeight="400" VBox.vgrow="NEVER">
             <xAxis>
-                <CategoryAxis side="BOTTOM"/>
+                <NumberAxis side="BOTTOM" fx:id="xAxis"/>
             </xAxis>
             <yAxis>
-                <NumberAxis label="Price" side="LEFT"/>
+                <NumberAxis label="Price" side="LEFT" fx:id="yAxis"/>
             </yAxis>
         </LineChart>
 

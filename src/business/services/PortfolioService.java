@@ -8,7 +8,6 @@ import persistance.interfaces.OwnedStockDAO;
 import persistance.interfaces.PortfolioDAO;
 import persistance.interfaces.StockDAO;
 import persistance.interfaces.TransactionDAO;
-import shared.logging.Logger;
 
 import java.util.List;
 
@@ -64,6 +63,11 @@ public class PortfolioService
     }
 
     return currentBalance + stockValue;
+  }
+
+  public List<Portfolio> getAllPortfolios()
+  {
+    return portfolioDAO.getAllPortfolios();
   }
 
 }

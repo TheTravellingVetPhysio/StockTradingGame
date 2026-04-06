@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.control.ScrollPane?>
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="presentation.controllers.MainViewController">
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="80.0"
+              BorderPane.alignment="CENTER" styleClass="top-bar">
+            <Label text="Julies StockTradingGame">
+                <font>
+                    <Font size="24.0"/>
+                </font>
+            </Label>
+            <HBox fx:id="portfolioButtons" alignment="CENTER_RIGHT"
+                  spacing="10.0" HBox.hgrow="ALWAYS"/>
+            <Button text="New Portfolio"
+                    onAction="#onNewPortfolioClicked"
+                    mnemonicParsing="false">
+            </Button>
+        </HBox>
+    </top>
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="200.0"
+              BorderPane.alignment="CENTER" styleClass="side-nav">
+            <Button text="StockMarket" prefWidth="150.0"
+                    onAction="#onStockMarketClicked"
+                    mnemonicParsing="false">
+            </Button>
+            <Separator prefWidth="200.0"/>
+            <Button text="Dashboard" prefWidth="150.0"
+                    onAction="#onDashboardClicked"
+                    mnemonicParsing="false">
+            </Button>
+            <Button text="Transactions" prefWidth="150.0"
+                    onAction="#onTransactionsClicked"
+                    mnemonicParsing="false">
+            </Button>
+        </VBox>
+    </left>
+    <center>
+            <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER" prefHeight="500" prefWidth="700">
+                <VBox fx:id="contentArea" BorderPane.alignment="CENTER"/>
+            </ScrollPane>
+    </center>
+</BorderPane>

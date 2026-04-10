@@ -45,6 +45,10 @@ public class StockMarketController
     NumberAxis xAxis = (NumberAxis) stockChart.getXAxis();
     xAxis.setTickLabelsVisible(false);
 
+    NumberAxis yAxis = (NumberAxis) stockChart.getYAxis();
+    yAxis.setForceZeroInRange(false);
+    yAxis.setAutoRanging(true);
+
     symbolColumn.setCellValueFactory(data -> data.getValue().symbolProperty());
     nameColumn.setCellValueFactory(data -> data.getValue().nameProperty());
 
@@ -71,60 +75,45 @@ public class StockMarketController
         CheckBoxTableCell.forTableColumn(selectedColumn));
 
     stockTable.setItems(stockMarketViewModel.getStocksUI());
-
     stockTable.setFixedCellSize(33);
-    stockTable.prefHeightProperty().bind(stockTable.fixedCellSizeProperty()
+    stockTable.prefHeightProperty()
+        .bind(stockTable.fixedCellSizeProperty()
         .multiply(Bindings.size(stockTable.getItems())).add(46));
     stockTable.minHeightProperty().bind(stockTable.prefHeightProperty());
     stockTable.maxHeightProperty().bind(stockTable.prefHeightProperty());
 
     stockMarketViewModel.getStocksUI().forEach(ui -> {
       ui.selectedProperty().addListener((obs, oldV, newV) -> {
-        updateChart();
+        stockMarketViewModel.refreshSelectedSeries();
       });
     });
 
-    updateChart();
-    stockMarketViewModel.setOnChartDataUpdated(() -> updateChart());
-  }
-
-  private void updateChart()
-  {
-    stockChart.getData().clear();
-    stockChart.getData().addAll(stockMarketViewModel.buildSelectedSeries());
-
-    // Auto-skalering
-    NumberAxis yAxis = (NumberAxis) stockChart.getYAxis();
-    yAxis.setAutoRanging(false);
-    yAxis.setForceZeroInRange(false);
-    yAxis.setLowerBound(Double.NaN);
-    yAxis.setUpperBound(Double.NaN);
-    yAxis.setAutoRanging(true);
-
+    stockChart.setData(stockMarketViewModel.getSelectedSeries());
+    stockMarketViewModel.refreshSelectedSeries();
   }
 
   @FXML private void onSevenTicksClicked()
   {
     stockMarketViewModel.setTickRange(7);
-    updateChart();
+    stockMarketViewModel.refreshSelectedSeries();
   }
 
   @FXML private void onThirtyTicksClicked()
   {
     stockMarketViewModel.setTickRange(30);
-    updateChart();
+    stockMarketViewModel.refreshSelectedSeries();
   }
 
   @FXML private void onThreeSixFiveTicksClicked()
   {
     stockMarketViewModel.setTickRange(365);
-    updateChart();
+    stockMarketViewModel.refreshSelectedSeries();
   }
 
   @FXML private void onEighteenTwentyFiveTicksClicked()
   {
     stockMarketViewModel.setTickRange(1825);
-    updateChart();
+    stockMarketViewModel.refreshSelectedSeries();
   }
 
 }

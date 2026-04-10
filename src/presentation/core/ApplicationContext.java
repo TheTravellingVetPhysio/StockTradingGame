@@ -14,7 +14,9 @@ public class ApplicationContext
 {
 
   // DAOs
-  private final FileUnitOfWork uow;
+  private final FileUnitOfWork uow = new FileUnitOfWork("data");
+  private final FileUnitOfWork stockListenerUow;
+
   private final StockDAO stockDAO;
   private final StockPriceHistoryDAO stockPriceHistoryDAO;
   private final OwnedStockDAO ownedStockDAO;
@@ -46,15 +48,12 @@ public class ApplicationContext
     logger.setOutput(new ConsoleLogOutput());
     logger.log("INFO", "Application started");
 
-    uow = new FileUnitOfWork("data");
     stockDAO = new FileStockDAO(uow);
     stockPriceHistoryDAO = new FileStockPriceHistoryDAO(uow);
     ownedStockDAO = new FileOwnedStockDAO(uow);
     portfolioDAO = new FilePortfolioDAO(uow);
     transactionDAO = new FileTransactionDAO(uow);
 
-    stockListenerService = new StockListenerService(stockDAO,
-        stockPriceHistoryDAO, uow);
     stockBankruptService = new StockBankruptService(ownedStockDAO, uow);
     stockAlertService = new StockAlertService();
     transactionService = new TransactionService(uow, ownedStockDAO, stockDAO,
@@ -62,6 +61,13 @@ public class ApplicationContext
     portfolioService = new PortfolioService(ownedStockDAO, transactionDAO,
         portfolioDAO, stockDAO);
     stockMarketService = new StockMarketService(stockDAO, stockPriceHistoryDAO);
+
+    stockListenerUow = new FileUnitOfWork("data");
+    FileStockDAO sharedStockDAO = new FileStockDAO(stockListenerUow);
+    FileStockPriceHistoryDAO sharedStockPriceHistoryDAO = new FileStockPriceHistoryDAO(stockListenerUow);
+    stockListenerService = new StockListenerService(sharedStockDAO,
+        sharedStockPriceHistoryDAO, stockListenerUow);
+
   }
 
   public void setViewManager(ViewManager viewManager)

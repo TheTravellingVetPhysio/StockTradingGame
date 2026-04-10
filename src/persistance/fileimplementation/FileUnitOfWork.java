@@ -286,8 +286,8 @@ public class FileUnitOfWork implements UnitOfWork
     stockList = null;
     stockPriceHistoryList = null;
     transactionList = null;
-    transactionBuffer.clear();
-    stockPriceHistoryBuffer.clear();
+    transactionBuffer = new ArrayList<>();
+    stockPriceHistoryBuffer = new ArrayList<>();
   }
 
   @Override public void commit()

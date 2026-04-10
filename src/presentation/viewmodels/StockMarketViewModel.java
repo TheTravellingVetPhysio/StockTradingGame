@@ -20,11 +20,12 @@ public class StockMarketViewModel implements Listener
   private StockMarketService stockMarketService;
   private TransactionService transactionService;
   private ObservableList<StockUI> stocksUI = FXCollections.observableArrayList();
+  private final Map<String, XYChart.Series<Number, Number>> seriesMap = new HashMap<>();
+  private final ObservableList<XYChart.Series<Number, Number>> selectedSeries =
+      FXCollections.observableArrayList();
+  private final Map<String, Long> lastUpdatePerSymbol = new HashMap<>();
 
-  private long lastUpdate = 0;
   private int tickRange = 30;
-  private Runnable onChartDataUpdated = () -> {};
-
 
   public StockMarketViewModel(StockMarketService stockMarketService,
       TransactionService transactionService,
@@ -33,8 +34,12 @@ public class StockMarketViewModel implements Listener
     this.stockMarketService = stockMarketService;
     this.transactionService = transactionService;
 
-    stockMarketService.getAllStocks().forEach(stock -> {
-      stocksUI.add(new StockUI(stock));
+    stockMarketService.getAllStocks().forEach(stock -> stocksUI.add(new StockUI(stock)));
+
+    stocksUI.forEach(ui -> {
+      XYChart.Series<Number, Number> series = new XYChart.Series<>();
+      series.setName(ui.getSymbol());
+      seriesMap.put(ui.getSymbol(), series);
     });
 
     stocksUI.stream().limit(5).forEach(stockUI -> stockUI.setSelected(true));
@@ -48,49 +53,51 @@ public class StockMarketViewModel implements Listener
     {
 
       long now = System.currentTimeMillis();
-      if (now - lastUpdate < 100)
+      long last = lastUpdatePerSymbol.getOrDefault(event.symbol(), 0L);
+      if (now - last < 100)
         return;  // throttle til max 10 updates/sek
-      lastUpdate = now;
+      lastUpdatePerSymbol.put(event.symbol(), now);
 
       Platform.runLater(() -> {
 
         stocksUI.stream()
             .filter(stockUI -> stockUI.getSymbol().equals(event.symbol()))
-            .findFirst().ifPresent(stockUI -> {
+            .findFirst()
+            .ifPresent(stockUI -> {
               stockUI.priceProperty().set(event.price());
               stockUI.stateProperty().set(event.state());
+              updateSeriesFor(stockUI.getSymbol());
             });
-        onChartDataUpdated.run();
       });
     }
   }
 
   // LineChart
+  public void refreshSelectedSeries() {
+    selectedSeries.clear();
+    stocksUI.stream()
+        .filter(StockUI::isSelected)
+        .map(ui -> seriesMap.get(ui.getSymbol()))
+        .forEach(selectedSeries::add);
+  }
 
-  public XYChart.Series<Number, Number> buildSeriesFor(String stockSymbol)
-  {
-    var fullHistory = getPriceHistory(stockSymbol);
+  public ObservableList<XYChart.Series<Number, Number>> getSelectedSeries() {
+    return selectedSeries;
+  }
+
+  private void updateSeriesFor(String symbol) {
+    XYChart.Series<Number, Number> series = seriesMap.get(symbol);
+    if (series == null) return;
+
+    var fullHistory = stockMarketService.getStockPriceHistory(symbol);
     int size = fullHistory.size();
+    var history = fullHistory.subList(Math.max(0, size - tickRange), size);
 
-    List<StockPriceHistory> history = fullHistory.subList(
-        Math.max(0, size - tickRange), size);
-
-    XYChart.Series<Number, Number> series = new XYChart.Series<>();
-    series.setName(stockSymbol);
-
+    series.getData().clear();
     int index = 0;
     for (StockPriceHistory h : history) {
       series.getData().add(new XYChart.Data<>(index++, h.getPrice()));
     }
-
-    return series;
-  }
-
-  public List<XYChart.Series<Number, Number>> buildSelectedSeries() {
-    return stocksUI.stream()
-        .filter(StockUI::isSelected)
-        .map(ui -> buildSeriesFor(ui.getSymbol()))
-        .toList();
   }
 
   public void setTickRange(int ticks)
@@ -102,8 +109,6 @@ public class StockMarketViewModel implements Listener
   {
     return tickRange;
   }
-
-  public void setOnChartDataUpdated(Runnable r) { this.onChartDataUpdated = r; }
 
   // Getters
 

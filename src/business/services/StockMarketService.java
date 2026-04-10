@@ -19,7 +19,7 @@ public class StockMarketService
     this.stockPriceHistoryDAO = stockPriceHistoryDAO;
   }
 
-  public List<Stock> getAllStocks()
+  public List<Stock> getAllStocks()   // Burde være en DTO for ikke at eksponere stock entiteter direkte. De bliver brugt i StockMarketViewModel hvor de med det samme bliver mappet til en StockUI entitet.
   {
     return stockDAO.getAllStocks();
   }

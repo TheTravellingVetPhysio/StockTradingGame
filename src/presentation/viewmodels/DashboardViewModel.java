@@ -5,6 +5,7 @@ import business.observertooling.EventType;
 import business.observertooling.Listener;
 import business.services.PortfolioService;
 import business.services.StockListenerService;
+import business.services.StockMarketService;
 import business.services.TransactionService;
 import dto.StockSellRequest;
 import dto.TransactionResult;
@@ -28,6 +29,7 @@ public class DashboardViewModel implements Listener
   private final PortfolioService portfolioService;
   private final TransactionService transactionService;
   private final MainViewModel mainViewModel;
+  private final StockMarketService stockMarketService;
 
   private final ObservableList<OwnedStockUI> ownedStocksUI = FXCollections.observableArrayList();
   private final DoubleProperty portfolioBalance = new SimpleDoubleProperty(0);
@@ -40,20 +42,22 @@ public class DashboardViewModel implements Listener
 
   public DashboardViewModel(PortfolioService portfolioService,
       TransactionService transactionService,
-      StockListenerService stockListenerService,
-      MainViewModel mainViewModel)
+      StockMarketService stockMarketService,
+      StockListenerService stockListenerService, MainViewModel mainViewModel)
   {
     this.portfolioService = portfolioService;
     this.transactionService = transactionService;
     this.mainViewModel = mainViewModel;
+    this.stockMarketService = stockMarketService;
 
     series.setName("Portfolio value");
     worthSeries.add(series);
 
-    mainViewModel.selectedPortfolioProperty().addListener((obs, oldVal, newVal) -> {
-      if (newVal != null)
-        refresh();
-    });
+    mainViewModel.selectedPortfolioProperty()
+        .addListener((obs, oldVal, newVal) -> {
+          if (newVal != null)
+            refresh();
+        });
 
     if (mainViewModel.getSelectedPortfolio() != null)
       refresh();
@@ -72,25 +76,24 @@ public class DashboardViewModel implements Listener
   public void refresh()
   {
     Portfolio portfolio = mainViewModel.getSelectedPortfolio();
-    if (portfolio == null) return;
+    if (portfolio == null)
+      return;
 
     String portfolioId = portfolio.getId();
     portfolioName.set(portfolio.getName());
     portfolioBalance.set(portfolioService.getPortfolioBalance(portfolioId));
     portfolioWorth.set(portfolioService.getPortfolioWorth(portfolioId));
 
-    // Opdater owned stocks
     List<OwnedStock> owned = portfolioService.getOwnedStocks(portfolioId);
     ownedStocksUI.clear();
     for (OwnedStock os : owned)
     {
-      double worth = portfolioService.getPortfolioWorth(portfolioId);
-      // Hent pris per share via worth - balance fordelt (simpel approksimation)
-      // Vi bruger totalValue = numberOfShares * currentPrice fra service
-      ownedStocksUI.add(new OwnedStockUI(os.getStockSymbol(), os.getNumberOfShares(), 0));
+      double price = stockMarketService.getStock(os.getStockSymbol()).currentPrice();
+      ownedStocksUI.add(
+          new OwnedStockUI(os.getStockSymbol(), os.getNumberOfShares(),
+              stockMarketService.getStock(os.getStockSymbol()).currentPrice()));
     }
 
-    // Opdater værdihistorik til graf
     worthHistory.add(portfolioService.getPortfolioWorth(portfolioId));
     rebuildSeries();
   }
@@ -109,9 +112,11 @@ public class DashboardViewModel implements Listener
       return new TransactionResult(false, "No portfolio chosen.");
     try
     {
-      transactionService.sellStock(new StockSellRequest(portfolio.getId(), symbol, amount));
+      transactionService.sellStock(
+          new StockSellRequest(portfolio.getId(), symbol, amount));
       refresh();
-      return new TransactionResult(true, "Sale of " + amount + " shares of " + symbol + " was successful.");
+      return new TransactionResult(true,
+          "Sale of " + amount + " shares of " + symbol + " was successful.");
     }
     catch (IllegalArgumentException | IllegalStateException e)
     {
@@ -119,13 +124,33 @@ public class DashboardViewModel implements Listener
     }
     catch (Exception e)
     {
-      return new TransactionResult(false, "An unexpected error occurred: " + e.getMessage());
+      return new TransactionResult(false,
+          "An unexpected error occurred: " + e.getMessage());
     }
   }
 
-  public ObservableList<OwnedStockUI> getOwnedStocksUI() { return ownedStocksUI; }
-  public DoubleProperty portfolioBalanceProperty() { return portfolioBalance; }
-  public DoubleProperty portfolioWorthProperty() { return portfolioWorth; }
-  public StringProperty portfolioNameProperty() { return portfolioName; }
-  public ObservableList<XYChart.Series<Number, Number>> getWorthSeries() { return worthSeries; }
+  public ObservableList<OwnedStockUI> getOwnedStocksUI()
+  {
+    return ownedStocksUI;
+  }
+
+  public DoubleProperty portfolioBalanceProperty()
+  {
+    return portfolioBalance;
+  }
+
+  public DoubleProperty portfolioWorthProperty()
+  {
+    return portfolioWorth;
+  }
+
+  public StringProperty portfolioNameProperty()
+  {
+    return portfolioName;
+  }
+
+  public ObservableList<XYChart.Series<Number, Number>> getWorthSeries()
+  {
+    return worthSeries;
+  }
 }

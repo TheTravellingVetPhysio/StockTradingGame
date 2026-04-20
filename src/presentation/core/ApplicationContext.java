@@ -88,7 +88,7 @@ public class ApplicationContext
           mainViewModel);
 
     if (controllerClass == DashboardController.class)
-      return new DashboardController(portfolioService, transactionService,
+      return new DashboardController(portfolioService, transactionService, stockMarketService,
           stockListenerService, mainViewModel);
 
     if (controllerClass == TransactionsController.class)

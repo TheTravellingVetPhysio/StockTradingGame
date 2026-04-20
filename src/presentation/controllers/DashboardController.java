@@ -2,6 +2,7 @@ package presentation.controllers;
 
 import business.services.PortfolioService;
 import business.services.StockListenerService;
+import business.services.StockMarketService;
 import business.services.TransactionService;
 import dto.TransactionResult;
 import javafx.beans.binding.Bindings;
@@ -31,11 +32,12 @@ public class DashboardController
 
   public DashboardController(PortfolioService portfolioService,
       TransactionService transactionService,
-      StockListenerService stockListenerService,
-      MainViewModel mainViewModel)
+      StockMarketService stockMarketService,
+      StockListenerService stockListenerService, MainViewModel mainViewModel)
   {
-    this.viewModel = new DashboardViewModel(portfolioService, transactionService,
-        stockListenerService, mainViewModel);
+    this.viewModel = new DashboardViewModel(portfolioService,
+        transactionService, stockMarketService, stockListenerService,
+        mainViewModel);
   }
 
   @FXML private void initialize()
@@ -48,43 +50,51 @@ public class DashboardController
 
     worthChart.setData(viewModel.getWorthSeries());
 
-    balanceLabel.textProperty().bind(
-        Bindings.createStringBinding(
-            () -> String.format("Balance: %.2f", viewModel.portfolioBalanceProperty().get()),
-            viewModel.portfolioBalanceProperty()));
+    balanceLabel.textProperty().bind(Bindings.createStringBinding(
+        () -> String.format("Balance: %.2f",
+            viewModel.portfolioBalanceProperty().get()),
+        viewModel.portfolioBalanceProperty()));
 
-    worthLabel.textProperty().bind(
-        Bindings.createStringBinding(
-            () -> String.format("Total worth: %.2f", viewModel.portfolioWorthProperty().get()),
-            viewModel.portfolioWorthProperty()));
+    worthLabel.textProperty().bind(Bindings.createStringBinding(
+        () -> String.format("Total worth: %.2f",
+            viewModel.portfolioWorthProperty().get()),
+        viewModel.portfolioWorthProperty()));
 
     symbolColumn.setCellValueFactory(data -> data.getValue().symbolProperty());
 
-    sharesColumn.setCellValueFactory(data -> data.getValue().numberOfSharesProperty());
+    sharesColumn.setCellValueFactory(
+        data -> data.getValue().numberOfSharesProperty());
 
-    priceColumn.setCellValueFactory(data -> data.getValue().pricePerShareProperty());
+    priceColumn.setCellValueFactory(
+        data -> data.getValue().pricePerShareProperty());
     priceColumn.setCellFactory(col -> new TableCell<>()
     {
       @Override protected void updateItem(Number price, boolean empty)
       {
         super.updateItem(price, empty);
-        setText(empty || price == null ? null : String.format("%.2f", price.doubleValue()));
+        setText(empty || price == null ?
+            null :
+            String.format("%.2f", price.doubleValue()));
       }
     });
 
-    totalValueColumn.setCellValueFactory(data -> data.getValue().totalValueProperty());
+    totalValueColumn.setCellValueFactory(
+        data -> data.getValue().totalValueProperty());
     totalValueColumn.setCellFactory(col -> new TableCell<>()
     {
       @Override protected void updateItem(Number val, boolean empty)
       {
         super.updateItem(val, empty);
-        setText(empty || val == null ? null : String.format("%.2f", val.doubleValue()));
+        setText(empty || val == null ?
+            null :
+            String.format("%.2f", val.doubleValue()));
       }
     });
 
     sellColumn.setCellFactory(col -> new TableCell<>()
     {
       private final Button btn = new Button("Sell");
+
       {
         btn.setOnAction(e -> {
           OwnedStockUI stock = getTableView().getItems().get(getIndex());
@@ -102,11 +112,13 @@ public class DashboardController
 
     ownedStockTable.setItems(viewModel.getOwnedStocksUI());
     ownedStockTable.setFixedCellSize(33);
-    ownedStockTable.prefHeightProperty()
-        .bind(ownedStockTable.fixedCellSizeProperty()
+    ownedStockTable.prefHeightProperty().bind(
+        ownedStockTable.fixedCellSizeProperty()
             .multiply(Bindings.size(ownedStockTable.getItems())).add(46));
-    ownedStockTable.minHeightProperty().bind(ownedStockTable.prefHeightProperty());
-    ownedStockTable.maxHeightProperty().bind(ownedStockTable.prefHeightProperty());
+    ownedStockTable.minHeightProperty()
+        .bind(ownedStockTable.prefHeightProperty());
+    ownedStockTable.maxHeightProperty()
+        .bind(ownedStockTable.prefHeightProperty());
   }
 
   private void showSellDialog(OwnedStockUI stock)
@@ -121,15 +133,20 @@ public class DashboardController
     content.setPadding(new Insets(10));
 
     dialog.getDialogPane().setContent(content);
-    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    dialog.getDialogPane().getButtonTypes()
+        .addAll(ButtonType.OK, ButtonType.CANCEL);
 
     dialog.showAndWait().ifPresent(buttonType -> {
       if (buttonType == ButtonType.OK)
       {
         int amount = Integer.parseInt(amountField.getText());
-        TransactionResult result = viewModel.sellStock(stock.getSymbol(), amount);
-        Alert alert = new Alert(result.success() ? Alert.AlertType.INFORMATION : Alert.AlertType.WARNING);
-        alert.setTitle(result.success() ? "Sale successful" : "Sale unsuccessful");
+        TransactionResult result = viewModel.sellStock(stock.getSymbol(),
+            amount);
+        Alert alert = new Alert(result.success() ?
+            Alert.AlertType.INFORMATION :
+            Alert.AlertType.WARNING);
+        alert.setTitle(
+            result.success() ? "Sale successful" : "Sale unsuccessful");
         alert.setHeaderText(null);
         alert.setContentText(result.message());
         alert.showAndWait();

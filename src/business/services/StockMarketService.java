@@ -1,5 +1,6 @@
 package business.services;
 
+import dto.StockDTO;
 import entities.Stock;
 import entities.StockPriceHistory;
 import persistance.interfaces.StockDAO;
@@ -17,6 +18,12 @@ public class StockMarketService
   {
     this.stockDAO = stockDAO;
     this.stockPriceHistoryDAO = stockPriceHistoryDAO;
+  }
+
+  public StockDTO getStock(String symbol)
+  {
+    Stock stock = stockDAO.getStockBySymbol(symbol);
+    return new StockDTO(stock.getSymbol(), stock.getName(), stock.getCurrentPrice(), stock.getCurrentState());
   }
 
   public List<Stock> getAllStocks()   // Burde være en DTO for ikke at eksponere stock entiteter direkte. De bliver brugt i StockMarketViewModel hvor de med det samme bliver mappet til en StockUI entitet.

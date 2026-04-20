@@ -1,12 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="presentation.controllers.DashboardController">
-</AnchorPane>
+<VBox spacing="10.0" prefHeight="0" maxHeight="Infinity" VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="presentation.controllers.DashboardController">
+
+    <Label text="Dashboard" styleClass="section-title"/>
+
+    <LineChart fx:id="worthChart" animated="false" createSymbols="false"
+               prefHeight="300" minHeight="300" VBox.vgrow="NEVER">
+        <xAxis>
+            <NumberAxis side="BOTTOM" fx:id="xAxis"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Value" side="LEFT" fx:id="yAxis"/>
+        </yAxis>
+    </LineChart>
+
+    <HBox spacing="20.0">
+        <Label fx:id="balanceLabel" text="Balance: -"/>
+        <Label fx:id="worthLabel" text="Total worth: -"/>
+    </HBox>
+
+    <Separator/>
+
+    <Label text="Owned Stocks" styleClass="section-title"/>
+
+    <TableView fx:id="ownedStockTable" minHeight="100">
+        <columns>
+            <TableColumn fx:id="symbolColumn" prefWidth="120.0" text="Symbol"/>
+            <TableColumn fx:id="sharesColumn" prefWidth="100.0" text="Shares"/>
+            <TableColumn fx:id="priceColumn" prefWidth="120.0" text="Price/share"/>
+            <TableColumn fx:id="totalValueColumn" prefWidth="120.0" text="Total value"/>
+            <TableColumn fx:id="sellColumn" prefWidth="80.0" text=""/>
+        </columns>
+    </TableView>
+
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+</VBox>

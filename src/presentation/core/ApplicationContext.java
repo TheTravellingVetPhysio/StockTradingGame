@@ -37,8 +37,10 @@ public class ApplicationContext
   private ViewManager viewManager;
   private final MainViewModel mainViewModel;
 
-  public static ApplicationContext getInstance() {
-    if (instance == null) {
+  public static ApplicationContext getInstance()
+  {
+    if (instance == null)
+    {
       instance = new ApplicationContext();
     }
     return instance;
@@ -66,7 +68,8 @@ public class ApplicationContext
 
     stockListenerUow = new FileUnitOfWork("data");
     FileStockDAO sharedStockDAO = new FileStockDAO(stockListenerUow);
-    FileStockPriceHistoryDAO sharedStockPriceHistoryDAO = new FileStockPriceHistoryDAO(stockListenerUow);
+    FileStockPriceHistoryDAO sharedStockPriceHistoryDAO = new FileStockPriceHistoryDAO(
+        stockListenerUow);
     stockListenerService = new StockListenerService(sharedStockDAO,
         sharedStockPriceHistoryDAO, stockListenerUow);
 
@@ -80,19 +83,23 @@ public class ApplicationContext
 
   public Object getController(Class<?> controllerClass)
   {
-      if (controllerClass == MainViewController.class)
-        return new MainViewController(viewManager, portfolioService, mainViewModel);
+    if (controllerClass == MainViewController.class)
+      return new MainViewController(viewManager, portfolioService,
+          mainViewModel);
 
-      if (controllerClass == DashboardController.class)
-        return new DashboardController(portfolioService, stockMarketService);
+    if (controllerClass == DashboardController.class)
+      return new DashboardController(portfolioService, transactionService,
+          stockListenerService, mainViewModel);
 
-      if (controllerClass == TransactionsController.class)
-        return new TransactionsController(transactionService, portfolioService);
+    if (controllerClass == TransactionsController.class)
+      return new TransactionsController(transactionService, portfolioService);
 
-      if (controllerClass == StockMarketController.class)
-        return new StockMarketController(stockMarketService, transactionService, stockListenerService, mainViewModel);
+    if (controllerClass == StockMarketController.class)
+      return new StockMarketController(stockMarketService, transactionService,
+          stockListenerService, mainViewModel);
 
-      throw new IllegalArgumentException("Unknown controller: " + controllerClass.getName());
+    throw new IllegalArgumentException(
+        "Unknown controller: " + controllerClass.getName());
   }
 
   // Getters

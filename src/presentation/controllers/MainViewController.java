@@ -6,7 +6,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import presentation.core.ViewManager;
 import presentation.core.Views;
@@ -21,10 +20,10 @@ public class MainViewController
   @FXML private VBox contentArea;
 
   public MainViewController(ViewManager viewManager,
-      PortfolioService portfolioService)
+      PortfolioService portfolioService, MainViewModel mainViewModel)
   {
     this.viewManager = viewManager;
-    this.viewModel = new MainViewModel(portfolioService);
+    this.viewModel = mainViewModel;
   }
 
   @FXML

@@ -81,7 +81,7 @@ public class ApplicationContext
   public Object getController(Class<?> controllerClass)
   {
       if (controllerClass == MainViewController.class)
-        return new MainViewController(viewManager, portfolioService);
+        return new MainViewController(viewManager, portfolioService, mainViewModel);
 
       if (controllerClass == DashboardController.class)
         return new DashboardController(portfolioService, stockMarketService);

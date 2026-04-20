@@ -3,6 +3,7 @@ package presentation.controllers;
 import business.services.StockListenerService;
 import business.services.StockMarketService;
 import business.services.TransactionService;
+import dto.TransactionResult;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -170,18 +171,21 @@ public class StockMarketController
     dialog.getDialogPane().setContent(content);
     dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    dialog.showAndWait().ifPresent(result -> {
-      if (result == ButtonType.OK) {
+    dialog.showAndWait().ifPresent(buttonType -> {
+      if (buttonType == ButtonType.OK)
+      {
         int amount = Integer.parseInt(amountField.getText());
-        String error = stockMarketViewModel.buyStock(stock.getSymbol(), amount);
-        if (error != null) {
-          Alert alert = new Alert(Alert.AlertType.WARNING);
-          alert.setTitle("Purchase unsuccesfull");
-          alert.setHeaderText(null);
-          alert.setContentText(error);
-          alert.showAndWait();
-        }      }
-    });
+        TransactionResult result = stockMarketViewModel.buyStock(
+            stock.getSymbol(), amount);
+        Alert alert = new Alert(result.success() ?
+            Alert.AlertType.INFORMATION :
+            Alert.AlertType.WARNING);
+        alert.setTitle(
+            result.success() ? "Purchase successful" : "Purchase unsuccessful");
+        alert.setHeaderText(null);
+        alert.setContentText(result.message());
+        alert.showAndWait();
+      }});
   }
 
   private void showSellDialog(StockUI stock) {
@@ -203,17 +207,16 @@ public class StockMarketController
     dialog.getDialogPane().setContent(content);
     dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    dialog.showAndWait().ifPresent(result -> {
-      if (result == ButtonType.OK) {
+    dialog.showAndWait().ifPresent(buttonType -> {
+      if (buttonType == ButtonType.OK) {
         int amount = Integer.parseInt(amountField.getText());
-        String error = stockMarketViewModel.sellStock(stock.getSymbol(), amount);
-        if (error != null) {
-          Alert alert = new Alert(Alert.AlertType.WARNING);
-          alert.setTitle("Sale unsuccesfull");
-          alert.setHeaderText(null);
-          alert.setContentText(error);
-          alert.showAndWait();
-        }      }
+        TransactionResult result = stockMarketViewModel.sellStock(stock.getSymbol(), amount);
+        Alert alert = new Alert(result.success() ? Alert.AlertType.INFORMATION : Alert.AlertType.WARNING);
+        alert.setTitle(result.success() ? "Purchase successful" : "Purchase unsuccessful");
+        alert.setHeaderText(null);
+        alert.setContentText(result.message());
+        alert.showAndWait();
+        }
     });
   }
 

@@ -8,6 +8,7 @@ import business.services.StockMarketService;
 import business.services.TransactionService;
 import dto.StockBuyRequest;
 import dto.StockSellRequest;
+import dto.TransactionResult;
 import entities.Portfolio;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -134,49 +135,49 @@ public class StockMarketViewModel implements Listener
     return stocksUI;
   }
 
-  public String buyStock(String symbol, int amount)
+  public TransactionResult buyStock(String symbol, int amount)
   {
     Portfolio portfolio = mainViewModel.getSelectedPortfolio();
     if (portfolio == null)
     {
-      return "No portfolio chosen.";
+      return new TransactionResult(false, "No portfolio chosen.");
     }
     try
     {
       transactionService.buyStock(
           new StockBuyRequest(portfolio.getId(), symbol, amount));
-      return null;
+      return new TransactionResult(true, "Purchase of " + amount + " shares of " + symbol + " was successful.");
     }
     catch (IllegalArgumentException | IllegalStateException e)
     {
-      return e.getMessage();
+      return new TransactionResult(false, e.getMessage());
     }
     catch (Exception e)
     {
-      return "Unexpected error " + e.getMessage();
+      return new TransactionResult(false, "An unexpected error occurred: " + e.getMessage());
     }
   }
 
-  public String sellStock(String symbol, int amount)
+  public TransactionResult sellStock(String symbol, int amount)
   {
     Portfolio portfolio = mainViewModel.getSelectedPortfolio();
     if (portfolio == null)
     {
-      return "Choose a portfolio first";
+      return new TransactionResult(false, "No portfolio chosen.");
     }
     try
     {
       transactionService.sellStock(
           new StockSellRequest(portfolio.getId(), symbol, amount));
-      return null;
+      return new TransactionResult(true, "Sale of " + amount + " shares of " + symbol + " was successful.");
     }
     catch (IllegalArgumentException | IllegalStateException e)
     {
-      return e.getMessage();
+      return new TransactionResult(false, e.getMessage());
     }
     catch (Exception e)
     {
-      return "Unexpected error: " + e.getMessage();
+      return new TransactionResult(false, "An unexpected error occurred: " + e.getMessage());
     }
   }
 }

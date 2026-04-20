@@ -147,9 +147,13 @@ public class StockMarketViewModel implements Listener
           new StockBuyRequest(portfolio.getId(), symbol, amount));
       return null;
     }
-    catch (IllegalArgumentException e)
+    catch (IllegalArgumentException | IllegalStateException e)
     {
       return e.getMessage();
+    }
+    catch (Exception e)
+    {
+      return "Unexpected error " + e.getMessage();
     }
   }
 
@@ -166,9 +170,13 @@ public class StockMarketViewModel implements Listener
           new StockSellRequest(portfolio.getId(), symbol, amount));
       return null;
     }
-    catch (IllegalArgumentException e)
+    catch (IllegalArgumentException | IllegalStateException e)
     {
       return e.getMessage();
+    }
+    catch (Exception e)
+    {
+      return "Unexpected error: " + e.getMessage();
     }
   }
 }

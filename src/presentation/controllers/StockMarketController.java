@@ -3,7 +3,6 @@ package presentation.controllers;
 import business.services.StockListenerService;
 import business.services.StockMarketService;
 import business.services.TransactionService;
-import dto.StockBuyRequest;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -72,12 +71,13 @@ public class StockMarketController
     });
 
     buyColumn.setCellFactory(col -> new TableCell<>() {
-      private final Button btn = new Button("Køb");
+      private final Button btn = new Button("Buy");
       {
         btn.setOnAction(e -> {
           StockUI stock = getTableView().getItems().get(getIndex());
           showBuyDialog(stock);
         });
+             btn.setStyle("-fx-padding: 2 8 2 8;");
       }
 
       @Override
@@ -88,12 +88,13 @@ public class StockMarketController
     });
 
     sellColumn.setCellFactory(col -> new TableCell<>() {
-      private final Button btn = new Button("Sælg");
+      private final Button btn = new Button("Sell");
       {
         btn.setOnAction(e -> {
           StockUI stock = getTableView().getItems().get(getIndex());
           showSellDialog(stock);
         });
+        btn.setStyle("-fx-padding: 2 8 2 8;");
       }
 
       @Override

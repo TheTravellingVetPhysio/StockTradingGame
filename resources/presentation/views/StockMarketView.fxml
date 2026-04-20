@@ -58,18 +58,16 @@
                    HBox.hgrow="ALWAYS"/>
         <Button mnemonicParsing="false" text="Search"/>
         <Separator orientation="VERTICAL"/>
-        <Button mnemonicParsing="false" text="Buy"/>
-        <Button mnemonicParsing="false" text="Sell"/>
     </HBox>
 
     <TableView fx:id="stockTable" minHeight="140">
         <columns>
             <TableColumn fx:id="selectedColumn" prefWidth="40.0" text=""/>
             <TableColumn fx:id="symbolColumn" prefWidth="100.0" text="Symbol"/>
-            <TableColumn fx:id="nameColumn" prefWidth="300.0"
+            <TableColumn fx:id="nameColumn" prefWidth="160.0"
                          text="Company Name"/>
-            <TableColumn fx:id="stateColumn" prefWidth="100.0" text="State"/>
-            <TableColumn fx:id="priceColumn" prefWidth="100.0"
+            <TableColumn fx:id="stateColumn" prefWidth="90.0" text="State"/>
+            <TableColumn fx:id="priceColumn" prefWidth="90.0"
                          text="Price"/>
             <TableColumn fx:id="buyColumn" prefWidth="80.0" text=""/>
             <TableColumn fx:id="sellColumn" prefWidth="80.0" text=""/>

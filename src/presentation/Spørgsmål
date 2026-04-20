@@ -1,20 +1,2 @@
-Hej Troels
-
-Her er lidt spørgsmål:
-
-1. Dubletter af Stocks:
-Efter jeg slettede mine gamle filer og startede programmet på ny (og dermed fik kørt loadOrCreateStocks() i GameService på en tom liste) kom der dubletter. Det har der ikke været før. Jeg kan ikke finde ud af, hvorfor de er opstået. Jeg kan godt lave nogle tjek inden der skrives til filen etc eller lave det som et Set i stedet for en Arraylist osv., men overordnet set synes jeg ikke det burde være muligt at lave dubletter fordi de jo kun bliver oprettet hvis listen er tom. Har du nogen bud på, hvor det er gået galt?
-
-
-2. Strukturen:
-Hvordan skal strukturen på hele projektet være? Mangler jeg main/java/ etc? Jeg har også opdaget at jeg har 2 services packages, selvom den ene er tom. Skal test være på samme niveau som src m.fl.? Jeg er i tvivl om hvad den rette struktur er og kunne godt bruge noget klarhed omkring dette.
-
-
-3. "Ren" MVVM:
-Når jeg snakker med AI foreslår den at ændre i fx min Stock entitet, så den bliver sådan her:
-
-private final StringProperty symbol = new SimpleStringProperty();
-private final DoubleProperty currentPrice = new SimpleDoubleProperty();
-private final StringProperty state = new SimpleStringPropert
-
-Men nu har jeg oprettet en StockUI entitet i src/presentation/models og har prøvet at lave en "MVP" for StockMarketView med et par bindinger. Det kunne jeg rigtig godt bruge du kigger igennem og giver lidt feedback på, så jeg får sat det rigtigt op. Det TableView har givet en masse bøvl osv., så jeg har rodet rundt i det og fået alt for mange forskellige forslag fra AI og ikke kunnet finde nogen god løsning i læringsstierne.
+Jeg har problemer med min graf, når man genåbner StockMarket i applikationen.
+Den tager de "originale" datapunkter, fra da applikationen, blev startet og bruger, i stedet for de senest loggede.

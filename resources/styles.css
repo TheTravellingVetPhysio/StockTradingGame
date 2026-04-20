@@ -406,3 +406,64 @@
     -fx-shape: " ";
     -fx-padding: 0;
 }
+
+/* Graf farver: */
+.chart-series-line.default-color0,
+.chart-legend-item-symbol.default-color0 {
+    -fx-stroke: #e74c3c;
+    -fx-background-color: #e74c3c;
+}
+
+.chart-series-line.default-color1,
+.chart-legend-item-symbol.default-color1 {
+    -fx-stroke: #3498db;
+    -fx-background-color: #3498db;
+}
+
+.chart-series-line.default-color2,
+.chart-legend-item-symbol.default-color2 {
+    -fx-stroke: #2ecc71;
+    -fx-background-color: #2ecc71;
+}
+
+.chart-series-line.default-color3,
+.chart-legend-item-symbol.default-color3 {
+    -fx-stroke: #f39c12;
+    -fx-background-color: #f39c12;
+}
+
+.chart-series-line.default-color4,
+.chart-legend-item-symbol.default-color4 {
+    -fx-stroke: #9b59b6;
+    -fx-background-color: #9b59b6;
+}
+
+.chart-series-line.default-color5,
+.chart-legend-item-symbol.default-color5 {
+    -fx-stroke: #1abc9c;
+    -fx-background-color: #1abc9c;
+}
+
+.chart-series-line.default-color6,
+.chart-legend-item-symbol.default-color6 {
+    -fx-stroke: #e67e22;
+    -fx-background-color: #e67e22;
+}
+
+.chart-series-line.default-color7,
+.chart-legend-item-symbol.default-color7 {
+    -fx-stroke: #e91e63;
+    -fx-background-color: #e91e63;
+}
+
+.chart-series-line.default-color8,
+.chart-legend-item-symbol.default-color8 {
+    -fx-stroke: #00bcd4;
+    -fx-background-color: #00bcd4;
+}
+
+.chart-series-line.default-color9,
+.chart-legend-item-symbol.default-color9 {
+    -fx-stroke: #8bc34a;
+    -fx-background-color: #8bc34a;
+}

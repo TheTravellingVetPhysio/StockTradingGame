@@ -2,6 +2,7 @@ package presentation.controllers;
 
 import business.services.PortfolioService;
 import entities.Portfolio;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -38,6 +39,8 @@ public class MainViewController
     {
       rebuildPortfolioButtons();
     });
+
+    Platform.runLater(this::onStockMarketClicked);
   }
 
   @FXML private void onNewPortfolioClicked()

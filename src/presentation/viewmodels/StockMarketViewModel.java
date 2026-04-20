@@ -6,6 +6,9 @@ import business.observertooling.Listener;
 import business.services.StockListenerService;
 import business.services.StockMarketService;
 import business.services.TransactionService;
+import dto.StockBuyRequest;
+import dto.StockSellRequest;
+import entities.Portfolio;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +21,7 @@ public class StockMarketViewModel implements Listener
 {
   private StockMarketService stockMarketService;
   private TransactionService transactionService;
+  private MainViewModel mainViewModel;
   private ObservableList<StockUI> stocksUI = FXCollections.observableArrayList();
   private final Map<String, XYChart.Series<Number, Number>> seriesMap = new HashMap<>();
   private final ObservableList<XYChart.Series<Number, Number>> selectedSeries = FXCollections.observableArrayList();
@@ -28,10 +32,11 @@ public class StockMarketViewModel implements Listener
 
   public StockMarketViewModel(StockMarketService stockMarketService,
       TransactionService transactionService,
-      StockListenerService stockListenerService)
+      StockListenerService stockListenerService, MainViewModel mainViewModel)
   {
     this.stockMarketService = stockMarketService;
     this.transactionService = transactionService;
+    this.mainViewModel = mainViewModel;
 
     stockMarketService.getAllStocks()
         .forEach(stock -> stocksUI.add(new StockUI(stock)));
@@ -129,4 +134,41 @@ public class StockMarketViewModel implements Listener
     return stocksUI;
   }
 
+  public String buyStock(String symbol, int amount)
+  {
+    Portfolio portfolio = mainViewModel.getSelectedPortfolio();
+    if (portfolio == null)
+    {
+      return "No portfolio chosen.";
+    }
+    try
+    {
+      transactionService.buyStock(
+          new StockBuyRequest(portfolio.getId(), symbol, amount));
+      return null;
+    }
+    catch (IllegalArgumentException e)
+    {
+      return e.getMessage();
+    }
+  }
+
+  public String sellStock(String symbol, int amount)
+  {
+    Portfolio portfolio = mainViewModel.getSelectedPortfolio();
+    if (portfolio == null)
+    {
+      return "Choose a portfolio first";
+    }
+    try
+    {
+      transactionService.sellStock(
+          new StockSellRequest(portfolio.getId(), symbol, amount));
+      return null;
+    }
+    catch (IllegalArgumentException e)
+    {
+      return e.getMessage();
+    }
+  }
 }

@@ -71,6 +71,8 @@
             <TableColumn fx:id="stateColumn" prefWidth="100.0" text="State"/>
             <TableColumn fx:id="priceColumn" prefWidth="100.0"
                          text="Price"/>
+            <TableColumn fx:id="buyColumn" prefWidth="80.0" text=""/>
+            <TableColumn fx:id="sellColumn" prefWidth="80.0" text=""/>
         </columns>
     </TableView>
     <padding>

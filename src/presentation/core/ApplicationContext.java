@@ -7,6 +7,7 @@ import presentation.controllers.DashboardController;
 import presentation.controllers.MainViewController;
 import presentation.controllers.StockMarketController;
 import presentation.controllers.TransactionsController;
+import presentation.viewmodels.MainViewModel;
 import shared.logging.ConsoleLogOutput;
 import shared.logging.Logger;
 
@@ -34,6 +35,7 @@ public class ApplicationContext
   // ApplicationContext instantiering + ViewManager
   private static ApplicationContext instance;
   private ViewManager viewManager;
+  private final MainViewModel mainViewModel;
 
   public static ApplicationContext getInstance() {
     if (instance == null) {
@@ -68,6 +70,7 @@ public class ApplicationContext
     stockListenerService = new StockListenerService(sharedStockDAO,
         sharedStockPriceHistoryDAO, stockListenerUow);
 
+    mainViewModel = new MainViewModel(portfolioService);
   }
 
   public void setViewManager(ViewManager viewManager)
@@ -87,7 +90,7 @@ public class ApplicationContext
         return new TransactionsController(transactionService, portfolioService);
 
       if (controllerClass == StockMarketController.class)
-        return new StockMarketController(stockMarketService, transactionService, stockListenerService);
+        return new StockMarketController(stockMarketService, transactionService, stockListenerService, mainViewModel);
 
       throw new IllegalArgumentException("Unknown controller: " + controllerClass.getName());
   }

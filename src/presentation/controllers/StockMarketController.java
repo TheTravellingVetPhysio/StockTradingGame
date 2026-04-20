@@ -3,16 +3,17 @@ package presentation.controllers;
 import business.services.StockListenerService;
 import business.services.StockMarketService;
 import business.services.TransactionService;
+import dto.StockBuyRequest;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.layout.VBox;
 import presentation.models.StockUI;
+import presentation.viewmodels.MainViewModel;
 import presentation.viewmodels.StockMarketViewModel;
 
 public class StockMarketController
@@ -25,15 +26,17 @@ public class StockMarketController
   @FXML private TableColumn<StockUI, String> nameColumn;
   @FXML private TableColumn<StockUI, String> stateColumn;
   @FXML private TableColumn<StockUI, Double> priceColumn;
+  @FXML private TableColumn<StockUI, Void> buyColumn;
+  @FXML private TableColumn<StockUI, Void> sellColumn;
 
   private StockMarketViewModel stockMarketViewModel;
 
   public StockMarketController(StockMarketService stockMarketService,
       TransactionService transactionService,
-      StockListenerService stockListenerService)
+      StockListenerService stockListenerService, MainViewModel mainViewModel)
   {
     this.stockMarketViewModel = new StockMarketViewModel(stockMarketService,
-        transactionService, stockListenerService);
+        transactionService, stockListenerService, mainViewModel);
   }
 
   @FXML private void initialize()
@@ -65,6 +68,38 @@ public class StockMarketController
           setText(null);
         else
           setText(String.format("%.2f", price));
+      }
+    });
+
+    buyColumn.setCellFactory(col -> new TableCell<>() {
+      private final Button btn = new Button("Køb");
+      {
+        btn.setOnAction(e -> {
+          StockUI stock = getTableView().getItems().get(getIndex());
+          showBuyDialog(stock);
+        });
+      }
+
+      @Override
+      protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+        setGraphic(empty ? null : btn);
+      }
+    });
+
+    sellColumn.setCellFactory(col -> new TableCell<>() {
+      private final Button btn = new Button("Sælg");
+      {
+        btn.setOnAction(e -> {
+          StockUI stock = getTableView().getItems().get(getIndex());
+          showSellDialog(stock);
+        });
+      }
+
+      @Override
+      protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+        setGraphic(empty ? null : btn);
       }
     });
 
@@ -113,6 +148,72 @@ public class StockMarketController
   {
     stockMarketViewModel.setTickRange(1825);
     stockMarketViewModel.refreshSelectedSeries();
+  }
+
+  private void showBuyDialog(StockUI stock) {
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Buy " + stock.getSymbol());
+
+    TextField amountField = new TextField();
+    amountField.setPromptText("Number of shares");
+
+    Label priceLabel = new Label("Price per share: " + stock.getPrice());
+
+    VBox content = new VBox(10,
+        priceLabel,
+        new Label("Number:"),
+        amountField
+    );
+    content.setPadding(new Insets(10));
+
+    dialog.getDialogPane().setContent(content);
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+    dialog.showAndWait().ifPresent(result -> {
+      if (result == ButtonType.OK) {
+        int amount = Integer.parseInt(amountField.getText());
+        String error = stockMarketViewModel.buyStock(stock.getSymbol(), amount);
+        if (error != null) {
+          Alert alert = new Alert(Alert.AlertType.WARNING);
+          alert.setTitle("Purchase unsuccesfull");
+          alert.setHeaderText(null);
+          alert.setContentText(error);
+          alert.showAndWait();
+        }      }
+    });
+  }
+
+  private void showSellDialog(StockUI stock) {
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Sell " + stock.getSymbol());
+
+    TextField amountField = new TextField();
+    amountField.setPromptText("Number of shares");
+
+    Label priceLabel = new Label("Price per share: " + stock.getPrice());
+
+    VBox content = new VBox(10,
+        priceLabel,
+        new Label("Amount:"),
+        amountField
+    );
+    content.setPadding(new Insets(10));
+
+    dialog.getDialogPane().setContent(content);
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+    dialog.showAndWait().ifPresent(result -> {
+      if (result == ButtonType.OK) {
+        int amount = Integer.parseInt(amountField.getText());
+        String error = stockMarketViewModel.sellStock(stock.getSymbol(), amount);
+        if (error != null) {
+          Alert alert = new Alert(Alert.AlertType.WARNING);
+          alert.setTitle("Sale unsuccesfull");
+          alert.setHeaderText(null);
+          alert.setContentText(error);
+          alert.showAndWait();
+        }      }
+    });
   }
 
 }
